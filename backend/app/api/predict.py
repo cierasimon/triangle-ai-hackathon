@@ -1,4 +1,4 @@
-"""GET /predict (formula only, fast) and POST /whycard (placeholder until P2.4)."""
+"""GET /predict (formula only, fast) and POST /whycard."""
 
 from typing import Literal
 
@@ -7,6 +7,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from app import store
 from app.contracts import PredictResponse, WhyCard, WhyCardRequest
 from app.physics import formulas
+from app.physics.whycard import why_card
 
 router = APIRouter()
 
@@ -30,9 +31,4 @@ def whycard(body: WhyCardRequest, session: store.Session = Depends(store.session
     a, b = session.get_run(body.run_a), session.get_run(body.run_b)
     if not a or not b:
         raise HTTPException(404, "unknown run")
-    return WhyCard(
-        latex=r"t = \sqrt{\dfrac{2L}{g\sin\theta}}",
-        symbol="m",
-        sentence="FAKE DATA: mass does not appear in the formula, so it cancels.",
-        cancels=True,
-    )
+    return why_card(a, b)

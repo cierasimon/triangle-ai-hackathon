@@ -1,26 +1,62 @@
-import { useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { api } from "./api";
+import { Compare } from "./components/Compare";
+import { Controls } from "./components/Controls";
+import { ExportPanel } from "./components/ExportPanel";
 import { Formula } from "./components/Formula";
-import { RunCanvas } from "./components/RunCanvas";
-import type { Run, UploadResponse } from "./types";
+import { SceneCanvas } from "./components/SceneCanvas";
+import { TaDrawer } from "./components/TaDrawer";
+import { duration } from "./geometry";
+import { predict } from "./physics";
+import type { ParamsOverride, Run, UploadResponse } from "./types";
+import { usePlayback } from "./usePlayback";
 
 const fmt = (v: number | null, digits = 3) => (v === null ? "—" : v.toFixed(digits));
+const RERUN_DELAY_MS = 150;
+const PARAM_LABELS: Record<string, string> = {
+  angle_deg: "θ", mass_kg: "m", gravity: "g", friction: "μ",
+};
+
+/** The params the learner has set themselves on a run (e.g. one a quiz created). */
+function overrideFrom(run: Run): ParamsOverride {
+  const p = run.scene.params;
+  const out: Record<string, unknown> = {};
+  for (const [k, src] of Object.entries(p.sources)) if (src === "user") out[k] = p[k as keyof typeof p];
+  return out as ParamsOverride;
+}
+
+function changeSummary(run: Run): string {
+  const parts = Object.entries(run.changed).map(
+    ([k, [, b]]) => `${PARAM_LABELS[k] ?? k} ${+b.toFixed(2)}`,
+  );
+  return parts.length ? parts.join(", ") : run.index === 1 ? "as drawn" : "";
+}
 
 export function App() {
   const [upload, setUpload] = useState<UploadResponse | null>(null);
-  const [run, setRun] = useState<Run | null>(null);
+  const [runs, setRuns] = useState<Run[]>([]);
+  const [currentId, setCurrentId] = useState<string | null>(null);
+  const [override, setOverride] = useState<ParamsOverride>({});
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [dragAngle, setDragAngle] = useState<number | null>(null);
+  const [snap, setSnap] = useState(false);
+  const releaseTimer = useRef<number | undefined>(undefined);
+
+  const run = runs.find((r) => r.run_id === currentId) ?? null;
+  const { t, playing, play, reset } = usePlayback(run ? duration(run.frames) : 0, run?.run_id ?? "");
 
   async function onFile(file: File | undefined) {
     if (!file) return;
     setBusy(true);
     setError(null);
-    setRun(null);
+    setRuns([]);
+    setCurrentId(null);
+    setOverride({});
     try {
       const up = await api.upload(file);
       setUpload(up);
-      setRun(await api.run({ image_id: up.image_id }));
+      await requestRun(up.image_id, {}, "change");
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
     } finally {
@@ -28,16 +64,63 @@ export function App() {
     }
   }
 
+  async function requestRun(imageId: string, next: ParamsOverride, reason: "change" | "drag") {
+    const r = await api.run({ image_id: imageId, params_override: next, reason });
+    setOverride(next);
+    setRuns((prev) => [...prev, r]);
+    setCurrentId(r.run_id);
+    return r;
+  }
+
+  async function change(next: ParamsOverride, reason: "change" | "drag" = "change") {
+    if (!upload) return;
+    setBusy(true);
+    setError(null);
+    try {
+      await requestRun(upload.image_id, next, reason);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setBusy(false);
+      setDragAngle(null);
+    }
+  }
+
+  function onDrag(angle: number) {
+    window.clearTimeout(releaseTimer.current);
+    setDragAngle(angle);
+  }
+
+  function onDragEnd(angle: number) {
+    window.clearTimeout(releaseTimer.current);
+    releaseTimer.current = window.setTimeout(
+      () => change({ ...override, angle_deg: angle }, "drag"),
+      RERUN_DELAY_MS,
+    );
+  }
+
   const rec = upload?.recognition;
   const v = run?.verification;
   const p = run?.scene.params;
+  const drawnAngle = runs[0]?.scene.params.angle_deg ?? null;
+  const live = useMemo(
+    () => (run && p && dragAngle != null
+      ? predict(dragAngle, run.scene.ramp_length_m, p.gravity, p.friction, p.motion)
+      : null),
+    [run, p, dragAngle],
+  );
+  const comparePair = useMemo<[string, string] | null>(() => {
+    if (runs.length < 2 || !run) return null;
+    const i = runs.findIndex((r) => r.run_id === run.run_id);
+    return [runs[Math.max(0, i - 1)].run_id, run.run_id];
+  }, [runs, run]);
 
   return (
     <main>
       <header>
         <h1>PaperPhysics</h1>
         <label className="upload">
-          {busy ? "Working…" : "Take / choose a photo"}
+          {busy && !run ? "Working…" : "Take / choose a photo"}
           <input
             type="file"
             accept="image/*"
@@ -67,15 +150,66 @@ export function App() {
 
           {run && v && p && (
             <section>
-              <h2>Run {run.index}</h2>
-              <RunCanvas run={run} />
+              <div className="row wrap">
+                <h2>Run {run.index}</h2>
+                {busy && <span className="muted">running…</span>}
+              </div>
+              <SceneCanvas
+                run={run}
+                t={t}
+                onDrag={busy ? undefined : onDrag}
+                onDragEnd={onDragEnd}
+                dragAngle={dragAngle}
+                originalAngle={drawnAngle}
+                snap={snap}
+              />
+              <div className="row wrap">
+                <button onClick={play} disabled={playing || dragAngle != null}>Play</button>
+                <button onClick={reset}>Reset</button>
+                <label className="muted check">
+                  <input type="checkbox" checked={snap} onChange={(e) => setSnap(e.target.checked)} /> snap to 5°
+                </label>
+                {dragAngle == null && <span className="muted">drag the red handle to tilt the ramp</span>}
+              </div>
+              {live && dragAngle != null && (
+                <p className="live">
+                  θ = {dragAngle.toFixed(1)}° ·{" "}
+                  {live.will_move
+                    ? `predicted t = ${fmt(live.time_s, 2)} s · v = ${fmt(live.speed_m_s, 2)} m/s`
+                    : `the ball will not slide at this angle (μ = ${p.friction} ≥ tan θ = ${Math.tan((dragAngle * Math.PI) / 180).toFixed(2)})`}
+                </p>
+              )}
+
+              <div className="history">
+                {runs.map((r) => (
+                  <button key={r.run_id} className={r.run_id === run.run_id ? "chip active" : "chip"}
+                          onClick={() => setCurrentId(r.run_id)}>
+                    Run {r.index}
+                    <span className="chip-note">{changeSummary(r)}</span>
+                  </button>
+                ))}
+              </div>
+
+              <Controls
+                params={p}
+                busy={busy}
+                angleOverridden={override.angle_deg !== undefined}
+                onChange={(patch) => change({ ...override, ...patch })}
+                onResetAngle={() => {
+                  const rest = { ...override };
+                  delete rest.angle_deg;
+                  change(rest);
+                }}
+                onResetAll={() => change({})}
+              />
+
               <table>
                 <tbody>
                   {(["angle_deg", "mass_kg", "gravity", "friction", "motion"] as const).map((k) => (
                     <tr key={k}>
                       <th>{k}</th>
                       <td>{typeof p[k] === "number" ? +(p[k] as number).toFixed(2) : p[k]}</td>
-                      <td><span className="badge">{p.sources[k] ?? "default"}</span></td>
+                      <td><span className={`badge ${p.sources[k] ?? "default"}`}>{p.sources[k] ?? "default"}</span></td>
                     </tr>
                   ))}
                 </tbody>
@@ -100,10 +234,28 @@ export function App() {
               </table>
               <Formula latex={v.formula_latex} />
               {v.note && <p className="muted">{v.note}</p>}
+              <ExportPanel run={run} />
             </section>
           )}
         </div>
       )}
+
+      {comparePair && <Compare runs={runs} defaultPair={comparePair} />}
+
+      <TaDrawer
+        runs={runs}
+        busy={busy}
+        onApply={(patch) => {
+          // the backend sends unset fields as null; only the set ones are the change
+          const set = Object.fromEntries(Object.entries(patch).filter(([, v]) => v != null));
+          change({ ...override, ...set });
+        }}
+        onRun={(r) => {
+          setRuns((prev) => [...prev, r]);
+          setCurrentId(r.run_id);
+          setOverride(overrideFrom(r));
+        }}
+      />
     </main>
   );
 }

@@ -3,7 +3,7 @@ UVICORN := .venv/bin/uvicorn
 PYTEST  := .venv/bin/pytest
 SET     ?= all
 
-.PHONY: setup dev backend frontend test eval data fixtures build tunnel
+.PHONY: setup dev backend frontend serve test eval data fixtures build tunnel
 
 setup:  ## venv (Python 3.12 via uv) + backend deps + frontend deps
 	uv venv --python 3.12 --allow-existing
@@ -22,9 +22,14 @@ backend:
 frontend:
 	npm --prefix frontend run dev
 
-test:   ## pytest (no live LLM) + frontend typecheck
+serve:  ## demo mode: build the UI, serve UI + API from one process on :8000 (for the tunnel)
+	npm --prefix frontend run build
+	$(UVICORN) app.main:app --app-dir backend --host 0.0.0.0 --port 8000
+
+test:   ## pytest (no live LLM) + frontend typecheck + vitest
 	cd backend && ../$(PYTEST)
 	npm --prefix frontend run typecheck
+	npm --prefix frontend test
 
 eval:   ## recognition accuracy; make eval SET=synthetic|real|all
 	$(PY) scripts/eval_cv.py --set $(SET)
@@ -39,5 +44,6 @@ fixtures:  ## rebuild fixtures/synthetic from the downloaded dataset
 build:  ## build the frontend into frontend/dist (served by the backend at /)
 	npm --prefix frontend run build
 
-tunnel: ## public URL for :8000 (brew install cloudflared); then set PUBLIC_BASE_URL
+tunnel: ## public https URL for :8000 (brew install cloudflared); run `make serve` first
+	@command -v cloudflared >/dev/null || { echo "cloudflared not found: brew install cloudflared"; exit 1; }
 	cloudflared tunnel --url http://localhost:8000

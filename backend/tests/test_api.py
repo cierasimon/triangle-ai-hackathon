@@ -127,3 +127,8 @@ def test_blank_page_gives_clear_error(client):
     assert rec["lines"] == [] and any("no ramp" in w for w in rec["warnings"])
     r = client.post("/api/runs", json={"image_id": r.json()["image_id"]})
     assert r.status_code == 422 and "no ramp" in r.json()["detail"]
+
+
+def test_root_files_stay_inside_frontend_dist(client):
+    for path in ("/..%2F..%2F.env", "/..%2Fplan.md", "/%2E%2E%2FMakefile", "/nope.txt"):
+        assert client.get(path).status_code == 404, path

@@ -1,7 +1,8 @@
 // Thin typed client for the backend. The session lives in a cookie set by the backend.
 import type {
-  AskRequest, AskResponse, CornersRequest, ExportResponse, PredictResponse, Recognition,
-  Run, RunRequest, SessionState, SummaryResponse, UploadResponse, WhyCard, WhyCardRequest,
+  AskRequest, AskResponse, CornersRequest, ExportResponse, FollowUp, Level, PredictResponse,
+  QuizPrompt, QuizResult, Recognition, Run, RunRequest, SessionState, SummaryResponse,
+  UploadResponse, WhyCard, WhyCardRequest,
 } from "./types";
 
 async function call<T>(path: string, init?: RequestInit): Promise<T> {
@@ -41,6 +42,9 @@ export const api = {
   whycard: (body: WhyCardRequest) => post<WhyCard>("/whycard", body),
   session: () => call<SessionState>("/session"),
   ask: (body: AskRequest) => post<AskResponse>("/ta/ask", body),
-  summary: () => post<SummaryResponse>("/ta/summary"),
+  summary: (level: Level) => post<SummaryResponse>("/ta/summary", { level }),
+  followups: () => call<FollowUp[]>("/ta/followups"),
+  quiz: () => post<QuizPrompt>("/ta/quiz"),
+  quizAnswer: (quiz_id: string, guess: number) => post<QuizResult>("/ta/quiz/answer", { quiz_id, guess }),
   exportRun: (runId: string) => post<ExportResponse>(`/export/${runId}`),
 };

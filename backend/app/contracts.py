@@ -12,6 +12,7 @@ from pydantic import BaseModel
 
 Point = tuple[float, float]
 Motion = Literal["slide", "roll"]
+Level = Literal["beginner", "intermediate", "confident"]
 ParamSource = Literal["drawing", "label", "default", "user"]
 
 
@@ -133,6 +134,7 @@ class ParamsOverride(BaseModel):
 class RunRequest(BaseModel):
     image_id: str
     params_override: ParamsOverride | None = None
+    reason: Literal["change", "drag"] = "change"  # "drag" logs a drag_rerun event
 
 
 class PredictResponse(BaseModel):
@@ -155,12 +157,13 @@ class WhyCard(BaseModel):
 
 
 class LearnerProfile(BaseModel):
-    level: Literal["beginner", "intermediate", "confident"] = "beginner"
+    level: Level = "beginner"
     concepts_seen: dict[str, bool] = {
         "mass_independent": False,
         "angle_effect": False,
         "gravity_effect": False,
         "friction_effect": False,
+        "roll_effect": False,
     }
     runs: int = 0
 
@@ -174,14 +177,27 @@ class SessionState(BaseModel):
 
 class AskRequest(BaseModel):
     question: str
-    level: Literal["beginner", "intermediate", "confident"] = "beginner"
+    level: Level = "beginner"
+
+
+class FollowUp(BaseModel):
+    """A suggested next experiment; clicking it applies `change` as a new run."""
+
+    text: str
+    change: ParamsOverride
+    concept: str
 
 
 class AskResponse(BaseModel):
     answer_md: str
-    based_on: list[str]
-    flags: list[str]
-    followups: list[str]
+    based_on: list[str]  # run ids the answer relies on, e.g. ["r1", "r2"]
+    flags: list[str]  # numbers in the answer that match nothing in the context, as written
+    followups: list[FollowUp]
+    source: Literal["llm", "template"] = "template"
+
+
+class SummaryRequest(BaseModel):
+    level: Level = "beginner"
 
 
 class SummaryResponse(BaseModel):

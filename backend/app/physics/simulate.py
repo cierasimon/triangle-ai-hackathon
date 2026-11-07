@@ -15,8 +15,8 @@ import pymunk
 
 from app.contracts import Frame, Scene
 
-DT = 1 / 240
-RECORD_EVERY = 4  # 60 fps
+DT = 1 / 960  # 4 substeps of the plan's 1/240 s: cuts the ~half-step timing bias to ~0.5 ms
+RECORD_EVERY = 16  # 60 fps
 TIME_LIMIT_S = 10.0
 ROLL_FRICTION = 5.0  # high enough to roll without slipping up to 75°
 STUCK_AFTER_S = 0.5

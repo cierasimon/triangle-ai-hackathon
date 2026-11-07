@@ -67,7 +67,7 @@ def test_mass_is_a_real_input_but_does_not_change_time():
 def test_frames_are_60fps_and_start_on_the_ramp():
     sim = simulate(make_scene())
     dts = {round(b.t - a.t, 6) for a, b in zip(sim.frames[:-2], sim.frames[1:-1])}
-    assert dts == {round(4 / 240, 6)}
+    assert dts == {round(16 / 960, 6)}
     assert sim.frames[0].t == 0
 
 

@@ -1,0 +1,2882 @@
+[
+{
+"motion": "slide",
+"angle_deg": 5,
+"friction": 0.0,
+"gravity": 9.81,
+"length_m": 0.3,
+"time_s": 0.8377088765285169,
+"speed_m_s": 0.7162392769268633,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 5,
+"friction": 0.0,
+"gravity": 9.81,
+"length_m": 0.8,
+"time_s": 1.3679728669966813,
+"speed_m_s": 1.169613841473861,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 5,
+"friction": 0.0,
+"gravity": 1.62,
+"length_m": 0.3,
+"time_s": 2.06143722298841,
+"speed_m_s": 0.29105906952150407,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 5,
+"friction": 0.0,
+"gravity": 1.62,
+"length_m": 0.8,
+"time_s": 3.3663128887343667,
+"speed_m_s": 0.4752974702246268,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 5,
+"friction": 0.0,
+"gravity": 3.71,
+"length_m": 0.3,
+"time_s": 1.3621993421732472,
+"speed_m_s": 0.44046416807305344,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 5,
+"friction": 0.0,
+"gravity": 3.71,
+"length_m": 0.8,
+"time_s": 2.224462210852908,
+"speed_m_s": 0.7192749745056468,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 5,
+"friction": 0.1,
+"gravity": 9.81,
+"length_m": 0.3,
+"time_s": null,
+"speed_m_s": null,
+"will_move": false
+},
+{
+"motion": "slide",
+"angle_deg": 5,
+"friction": 0.1,
+"gravity": 9.81,
+"length_m": 0.8,
+"time_s": null,
+"speed_m_s": null,
+"will_move": false
+},
+{
+"motion": "slide",
+"angle_deg": 5,
+"friction": 0.1,
+"gravity": 1.62,
+"length_m": 0.3,
+"time_s": null,
+"speed_m_s": null,
+"will_move": false
+},
+{
+"motion": "slide",
+"angle_deg": 5,
+"friction": 0.1,
+"gravity": 1.62,
+"length_m": 0.8,
+"time_s": null,
+"speed_m_s": null,
+"will_move": false
+},
+{
+"motion": "slide",
+"angle_deg": 5,
+"friction": 0.1,
+"gravity": 3.71,
+"length_m": 0.3,
+"time_s": null,
+"speed_m_s": null,
+"will_move": false
+},
+{
+"motion": "slide",
+"angle_deg": 5,
+"friction": 0.1,
+"gravity": 3.71,
+"length_m": 0.8,
+"time_s": null,
+"speed_m_s": null,
+"will_move": false
+},
+{
+"motion": "slide",
+"angle_deg": 5,
+"friction": 0.3,
+"gravity": 9.81,
+"length_m": 0.3,
+"time_s": null,
+"speed_m_s": null,
+"will_move": false
+},
+{
+"motion": "slide",
+"angle_deg": 5,
+"friction": 0.3,
+"gravity": 9.81,
+"length_m": 0.8,
+"time_s": null,
+"speed_m_s": null,
+"will_move": false
+},
+{
+"motion": "slide",
+"angle_deg": 5,
+"friction": 0.3,
+"gravity": 1.62,
+"length_m": 0.3,
+"time_s": null,
+"speed_m_s": null,
+"will_move": false
+},
+{
+"motion": "slide",
+"angle_deg": 5,
+"friction": 0.3,
+"gravity": 1.62,
+"length_m": 0.8,
+"time_s": null,
+"speed_m_s": null,
+"will_move": false
+},
+{
+"motion": "slide",
+"angle_deg": 5,
+"friction": 0.3,
+"gravity": 3.71,
+"length_m": 0.3,
+"time_s": null,
+"speed_m_s": null,
+"will_move": false
+},
+{
+"motion": "slide",
+"angle_deg": 5,
+"friction": 0.3,
+"gravity": 3.71,
+"length_m": 0.8,
+"time_s": null,
+"speed_m_s": null,
+"will_move": false
+},
+{
+"motion": "slide",
+"angle_deg": 5,
+"friction": 0.6,
+"gravity": 9.81,
+"length_m": 0.3,
+"time_s": null,
+"speed_m_s": null,
+"will_move": false
+},
+{
+"motion": "slide",
+"angle_deg": 5,
+"friction": 0.6,
+"gravity": 9.81,
+"length_m": 0.8,
+"time_s": null,
+"speed_m_s": null,
+"will_move": false
+},
+{
+"motion": "slide",
+"angle_deg": 5,
+"friction": 0.6,
+"gravity": 1.62,
+"length_m": 0.3,
+"time_s": null,
+"speed_m_s": null,
+"will_move": false
+},
+{
+"motion": "slide",
+"angle_deg": 5,
+"friction": 0.6,
+"gravity": 1.62,
+"length_m": 0.8,
+"time_s": null,
+"speed_m_s": null,
+"will_move": false
+},
+{
+"motion": "slide",
+"angle_deg": 5,
+"friction": 0.6,
+"gravity": 3.71,
+"length_m": 0.3,
+"time_s": null,
+"speed_m_s": null,
+"will_move": false
+},
+{
+"motion": "slide",
+"angle_deg": 5,
+"friction": 0.6,
+"gravity": 3.71,
+"length_m": 0.8,
+"time_s": null,
+"speed_m_s": null,
+"will_move": false
+},
+{
+"motion": "slide",
+"angle_deg": 15,
+"friction": 0.0,
+"gravity": 9.81,
+"length_m": 0.3,
+"time_s": 0.48611945934691336,
+"speed_m_s": 1.2342645176271727,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 15,
+"friction": 0.0,
+"gravity": 9.81,
+"length_m": 0.8,
+"time_s": 0.793829752958379,
+"speed_m_s": 2.0155455172059913,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 15,
+"friction": 0.0,
+"gravity": 1.62,
+"length_m": 0.3,
+"time_s": 1.1962446338989168,
+"speed_m_s": 0.5015696480446661,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 15,
+"friction": 0.0,
+"gravity": 1.62,
+"length_m": 0.8,
+"time_s": 1.9534593070632096,
+"speed_m_s": 0.8190598054511854,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 15,
+"friction": 0.0,
+"gravity": 3.71,
+"length_m": 0.3,
+"time_s": 0.7904793971912006,
+"speed_m_s": 0.7590330654182407,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 15,
+"friction": 0.0,
+"gravity": 3.71,
+"length_m": 0.8,
+"time_s": 1.2908474502008505,
+"speed_m_s": 1.239495805450169,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 15,
+"friction": 0.1,
+"gravity": 9.81,
+"length_m": 0.3,
+"time_s": 0.6140168262092881,
+"speed_m_s": 0.9771719184051962,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 15,
+"friction": 0.1,
+"gravity": 9.81,
+"length_m": 0.8,
+"time_s": 1.0026852784639548,
+"speed_m_s": 1.595715060712859,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 15,
+"friction": 0.1,
+"gravity": 1.62,
+"length_m": 0.3,
+"time_s": 1.510974965831037,
+"speed_m_s": 0.3970946002205932,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 15,
+"friction": 0.1,
+"gravity": 1.62,
+"length_m": 0.8,
+"time_s": 2.4674117869368586,
+"speed_m_s": 0.6484527667699531,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 15,
+"friction": 0.1,
+"gravity": 3.71,
+"length_m": 0.3,
+"time_s": 0.9984534486631101,
+"speed_m_s": 0.6009293681176386,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 15,
+"friction": 0.1,
+"gravity": 3.71,
+"length_m": 0.8,
+"time_s": 1.6304676540978527,
+"speed_m_s": 0.9813135488942217,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 15,
+"friction": 0.3,
+"gravity": 9.81,
+"length_m": 0.3,
+"time_s": null,
+"speed_m_s": null,
+"will_move": false
+},
+{
+"motion": "slide",
+"angle_deg": 15,
+"friction": 0.3,
+"gravity": 9.81,
+"length_m": 0.8,
+"time_s": null,
+"speed_m_s": null,
+"will_move": false
+},
+{
+"motion": "slide",
+"angle_deg": 15,
+"friction": 0.3,
+"gravity": 1.62,
+"length_m": 0.3,
+"time_s": null,
+"speed_m_s": null,
+"will_move": false
+},
+{
+"motion": "slide",
+"angle_deg": 15,
+"friction": 0.3,
+"gravity": 1.62,
+"length_m": 0.8,
+"time_s": null,
+"speed_m_s": null,
+"will_move": false
+},
+{
+"motion": "slide",
+"angle_deg": 15,
+"friction": 0.3,
+"gravity": 3.71,
+"length_m": 0.3,
+"time_s": null,
+"speed_m_s": null,
+"will_move": false
+},
+{
+"motion": "slide",
+"angle_deg": 15,
+"friction": 0.3,
+"gravity": 3.71,
+"length_m": 0.8,
+"time_s": null,
+"speed_m_s": null,
+"will_move": false
+},
+{
+"motion": "slide",
+"angle_deg": 15,
+"friction": 0.6,
+"gravity": 9.81,
+"length_m": 0.3,
+"time_s": null,
+"speed_m_s": null,
+"will_move": false
+},
+{
+"motion": "slide",
+"angle_deg": 15,
+"friction": 0.6,
+"gravity": 9.81,
+"length_m": 0.8,
+"time_s": null,
+"speed_m_s": null,
+"will_move": false
+},
+{
+"motion": "slide",
+"angle_deg": 15,
+"friction": 0.6,
+"gravity": 1.62,
+"length_m": 0.3,
+"time_s": null,
+"speed_m_s": null,
+"will_move": false
+},
+{
+"motion": "slide",
+"angle_deg": 15,
+"friction": 0.6,
+"gravity": 1.62,
+"length_m": 0.8,
+"time_s": null,
+"speed_m_s": null,
+"will_move": false
+},
+{
+"motion": "slide",
+"angle_deg": 15,
+"friction": 0.6,
+"gravity": 3.71,
+"length_m": 0.3,
+"time_s": null,
+"speed_m_s": null,
+"will_move": false
+},
+{
+"motion": "slide",
+"angle_deg": 15,
+"friction": 0.6,
+"gravity": 3.71,
+"length_m": 0.8,
+"time_s": null,
+"speed_m_s": null,
+"will_move": false
+},
+{
+"motion": "slide",
+"angle_deg": 30,
+"friction": 0.0,
+"gravity": 9.81,
+"length_m": 0.3,
+"time_s": 0.3497487083913345,
+"speed_m_s": 1.7155174146594954,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 30,
+"friction": 0.0,
+"gravity": 9.81,
+"length_m": 0.8,
+"time_s": 0.5711372491708259,
+"speed_m_s": 2.8014282071829006,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 30,
+"friction": 0.0,
+"gravity": 1.62,
+"length_m": 0.3,
+"time_s": 0.8606629658238705,
+"speed_m_s": 0.697137002317335,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 30,
+"friction": 0.0,
+"gravity": 1.62,
+"length_m": 0.8,
+"time_s": 1.405456737852613,
+"speed_m_s": 1.1384199576606164,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 30,
+"friction": 0.0,
+"gravity": 3.71,
+"length_m": 0.3,
+"time_s": 0.5687267663569999,
+"speed_m_s": 1.0549881515922348,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 30,
+"friction": 0.0,
+"gravity": 3.71,
+"length_m": 0.8,
+"time_s": 0.9287269204251442,
+"speed_m_s": 1.7227884373886422,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 30,
+"friction": 0.1,
+"gravity": 9.81,
+"length_m": 0.3,
+"time_s": 0.38464245663554447,
+"speed_m_s": 1.5598902036144977,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 30,
+"friction": 0.1,
+"gravity": 9.81,
+"length_m": 0.8,
+"time_s": 0.6281185014451264,
+"speed_m_s": 2.5472900357477837,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 30,
+"friction": 0.1,
+"gravity": 1.62,
+"length_m": 0.3,
+"time_s": 0.9465296356128854,
+"speed_m_s": 0.6338945738465921,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 30,
+"friction": 0.1,
+"gravity": 1.62,
+"length_m": 0.8,
+"time_s": 1.5456764224493746,
+"speed_m_s": 1.0351455044287607,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 30,
+"friction": 0.1,
+"gravity": 3.71,
+"length_m": 0.3,
+"time_s": 0.6254675294502552,
+"speed_m_s": 0.9592824115543784,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 30,
+"friction": 0.1,
+"gravity": 3.71,
+"length_m": 0.8,
+"time_s": 1.0213841985548904,
+"speed_m_s": 1.5665016183565075,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 30,
+"friction": 0.3,
+"gravity": 9.81,
+"length_m": 0.3,
+"time_s": 0.5046165729349801,
+"speed_m_s": 1.1890215902150127,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 30,
+"friction": 0.3,
+"gravity": 9.81,
+"length_m": 0.8,
+"time_s": 0.8240354129617554,
+"speed_m_s": 1.9416641261196113,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 30,
+"friction": 0.3,
+"gravity": 1.62,
+"length_m": 0.3,
+"time_s": 1.2417624021077238,
+"speed_m_s": 0.48318422186207366,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 30,
+"friction": 0.3,
+"gravity": 1.62,
+"length_m": 0.8,
+"time_s": 2.0277895112911133,
+"speed_m_s": 0.789036530217214,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 30,
+"friction": 0.3,
+"gravity": 3.71,
+"length_m": 0.3,
+"time_s": 0.8205575743094665,
+"speed_m_s": 0.7312101171022948,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 30,
+"friction": 0.3,
+"gravity": 3.71,
+"length_m": 0.8,
+"time_s": 1.3399649077560558,
+"speed_m_s": 1.1940611211075718,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 30,
+"friction": 0.6,
+"gravity": 9.81,
+"length_m": 0.3,
+"time_s": null,
+"speed_m_s": null,
+"will_move": false
+},
+{
+"motion": "slide",
+"angle_deg": 30,
+"friction": 0.6,
+"gravity": 9.81,
+"length_m": 0.8,
+"time_s": null,
+"speed_m_s": null,
+"will_move": false
+},
+{
+"motion": "slide",
+"angle_deg": 30,
+"friction": 0.6,
+"gravity": 1.62,
+"length_m": 0.3,
+"time_s": null,
+"speed_m_s": null,
+"will_move": false
+},
+{
+"motion": "slide",
+"angle_deg": 30,
+"friction": 0.6,
+"gravity": 1.62,
+"length_m": 0.8,
+"time_s": null,
+"speed_m_s": null,
+"will_move": false
+},
+{
+"motion": "slide",
+"angle_deg": 30,
+"friction": 0.6,
+"gravity": 3.71,
+"length_m": 0.3,
+"time_s": null,
+"speed_m_s": null,
+"will_move": false
+},
+{
+"motion": "slide",
+"angle_deg": 30,
+"friction": 0.6,
+"gravity": 3.71,
+"length_m": 0.8,
+"time_s": null,
+"speed_m_s": null,
+"will_move": false
+},
+{
+"motion": "slide",
+"angle_deg": 45,
+"friction": 0.0,
+"gravity": 9.81,
+"length_m": 0.3,
+"time_s": 0.2941024351258899,
+"speed_m_s": 2.040105515424145,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 45,
+"friction": 0.0,
+"gravity": 9.81,
+"length_m": 0.8,
+"time_s": 0.480267265445615,
+"speed_m_s": 3.331478356151222,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 45,
+"friction": 0.0,
+"gravity": 1.62,
+"length_m": 0.3,
+"time_s": 0.7237284027029228,
+"speed_m_s": 0.8290402832874433,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 45,
+"friction": 0.0,
+"gravity": 1.62,
+"length_m": 0.8,
+"time_s": 1.1818435326544419,
+"speed_m_s": 1.3538171135111017,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 45,
+"friction": 0.0,
+"gravity": 3.71,
+"length_m": 0.3,
+"time_s": 0.47824029908843807,
+"speed_m_s": 1.2545994161170546,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 45,
+"friction": 0.0,
+"gravity": 3.71,
+"length_m": 0.8,
+"time_s": 0.7809631381351255,
+"speed_m_s": 2.048752267386993,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 45,
+"friction": 0.1,
+"gravity": 9.81,
+"length_m": 0.3,
+"time_s": 0.31001118679990725,
+"speed_m_s": 1.935414028743622,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 45,
+"friction": 0.1,
+"gravity": 9.81,
+"length_m": 0.8,
+"time_s": 0.5062461481429417,
+"speed_m_s": 3.1605178742974456,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 45,
+"friction": 0.1,
+"gravity": 1.62,
+"length_m": 0.3,
+"time_s": 0.7628767199655992,
+"speed_m_s": 0.786496670165864,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 45,
+"friction": 0.1,
+"gravity": 1.62,
+"length_m": 0.8,
+"time_s": 1.24577246704254,
+"speed_m_s": 1.2843436842029388,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 45,
+"friction": 0.1,
+"gravity": 3.71,
+"length_m": 0.3,
+"time_s": 0.5041095379998706,
+"speed_m_s": 1.1902175118141762,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 45,
+"friction": 0.1,
+"gravity": 3.71,
+"length_m": 0.8,
+"time_s": 0.8232074283798999,
+"speed_m_s": 1.9436170579131609,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 45,
+"friction": 0.3,
+"gravity": 9.81,
+"length_m": 0.3,
+"time_s": 0.35151964453737616,
+"speed_m_s": 1.7068747346670794,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 45,
+"friction": 0.3,
+"gravity": 9.81,
+"length_m": 0.8,
+"time_s": 0.5740291757873945,
+"speed_m_s": 2.78731476985518,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 45,
+"friction": 0.3,
+"gravity": 1.62,
+"length_m": 0.3,
+"time_s": 0.8650208922984166,
+"speed_m_s": 0.6936248654130898,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 45,
+"friction": 0.3,
+"gravity": 1.62,
+"length_m": 0.8,
+"time_s": 1.4125732019854158,
+"speed_m_s": 1.1326846621124838,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 45,
+"friction": 0.3,
+"gravity": 3.71,
+"length_m": 0.3,
+"time_s": 0.5716064876071383,
+"speed_m_s": 1.0496731807781305,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 45,
+"friction": 0.3,
+"gravity": 3.71,
+"length_m": 0.8,
+"time_s": 0.9334294855346701,
+"speed_m_s": 1.7141091263937491,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 45,
+"friction": 0.6,
+"gravity": 9.81,
+"length_m": 0.3,
+"time_s": 0.4650167801998609,
+"speed_m_s": 1.2902760191624145,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 45,
+"friction": 0.6,
+"gravity": 9.81,
+"length_m": 0.8,
+"time_s": 0.7593692222144127,
+"speed_m_s": 2.107011916198297,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 45,
+"friction": 0.6,
+"gravity": 1.62,
+"length_m": 0.3,
+"time_s": 1.1443150799483988,
+"speed_m_s": 0.5243311134439093,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 45,
+"friction": 0.6,
+"gravity": 1.62,
+"length_m": 0.8,
+"time_s": 1.8686587005638102,
+"speed_m_s": 0.8562291228019591,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 45,
+"friction": 0.6,
+"gravity": 3.71,
+"length_m": 0.3,
+"time_s": 0.756164306999806,
+"speed_m_s": 0.7934783412094509,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 45,
+"friction": 0.6,
+"gravity": 3.71,
+"length_m": 0.8,
+"time_s": 1.23481114256985,
+"speed_m_s": 1.2957447052754405,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 60,
+"friction": 0.0,
+"gravity": 9.81,
+"length_m": 0.3,
+"time_s": 0.26575154964628855,
+"speed_m_s": 2.2577478882008073,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 60,
+"friction": 0.0,
+"gravity": 9.81,
+"length_m": 0.8,
+"time_s": 0.4339704633248789,
+"speed_m_s": 3.686886862625506,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 60,
+"friction": 0.0,
+"gravity": 1.62,
+"length_m": 0.3,
+"time_s": 0.6539624347517137,
+"speed_m_s": 0.9174838922174461,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 60,
+"friction": 0.0,
+"gravity": 1.62,
+"length_m": 0.8,
+"time_s": 1.0679161840598907,
+"speed_m_s": 1.4982449221036143,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 60,
+"friction": 0.0,
+"gravity": 3.71,
+"length_m": 0.3,
+"time_s": 0.4321388924632841,
+"speed_m_s": 1.3884424902833248,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 60,
+"friction": 0.0,
+"gravity": 3.71,
+"length_m": 0.8,
+"time_s": 0.7056798563643314,
+"speed_m_s": 2.2673170922622243,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 60,
+"friction": 0.1,
+"gravity": 9.81,
+"length_m": 0.3,
+"time_s": 0.2737721596964653,
+"speed_m_s": 2.191603414551822,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 60,
+"friction": 0.1,
+"gravity": 9.81,
+"length_m": 0.8,
+"time_s": 0.44706806469072663,
+"speed_m_s": 3.578873389462185,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 60,
+"friction": 0.1,
+"gravity": 1.62,
+"length_m": 0.3,
+"time_s": 0.6736995827893786,
+"speed_m_s": 0.890604678001679,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 60,
+"friction": 0.1,
+"gravity": 1.62,
+"length_m": 0.8,
+"time_s": 1.1001468118399262,
+"speed_m_s": 1.4543513490932185,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 60,
+"friction": 0.1,
+"gravity": 3.71,
+"length_m": 0.3,
+"time_s": 0.44518121544720074,
+"speed_m_s": 1.3477657618533572,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 60,
+"friction": 0.1,
+"gravity": 3.71,
+"length_m": 0.8,
+"time_s": 0.7269778806117775,
+"speed_m_s": 2.200892272889436,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 60,
+"friction": 0.3,
+"gravity": 9.81,
+"length_m": 0.3,
+"time_s": 0.2922650647683818,
+"speed_m_s": 2.0529309600362127,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 60,
+"friction": 0.3,
+"gravity": 9.81,
+"length_m": 0.8,
+"time_s": 0.47726685221600834,
+"speed_m_s": 3.3524222195004834,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 60,
+"friction": 0.3,
+"gravity": 1.62,
+"length_m": 0.3,
+"time_s": 0.7192069946654688,
+"speed_m_s": 0.8342521755910945,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 60,
+"friction": 0.3,
+"gravity": 1.62,
+"length_m": 0.8,
+"time_s": 1.174460104247321,
+"speed_m_s": 1.3623280980032912,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 60,
+"friction": 0.3,
+"gravity": 3.71,
+"length_m": 0.3,
+"time_s": 0.4752525490926423,
+"speed_m_s": 1.2624866529291152,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 60,
+"friction": 0.3,
+"gravity": 3.71,
+"length_m": 0.8,
+"time_s": 0.7760841628226574,
+"speed_m_s": 2.0616320711670224,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 60,
+"friction": 0.6,
+"gravity": 9.81,
+"length_m": 0.3,
+"time_s": 0.3287177532468275,
+"speed_m_s": 1.8252740963140865,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 60,
+"friction": 0.6,
+"gravity": 9.81,
+"length_m": 0.8,
+"time_s": 0.5367938432325572,
+"speed_m_s": 2.980660117792793,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 60,
+"friction": 0.6,
+"gravity": 1.62,
+"length_m": 0.3,
+"time_s": 0.8089099105744786,
+"speed_m_s": 0.7417389651882084,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 60,
+"friction": 0.6,
+"gravity": 1.62,
+"length_m": 0.8,
+"time_s": 1.320944352525229,
+"speed_m_s": 1.2112546580340837,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 60,
+"friction": 0.6,
+"gravity": 3.71,
+"length_m": 0.3,
+"time_s": 0.5345283066464596,
+"speed_m_s": 1.1224849882400032,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 60,
+"friction": 0.6,
+"gravity": 3.71,
+"length_m": 0.8,
+"time_s": 0.8728810695718426,
+"speed_m_s": 1.8330103100813226,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 75,
+"friction": 0.0,
+"gravity": 9.81,
+"length_m": 0.3,
+"time_s": 0.25163394854784354,
+"speed_m_s": 2.38441594809661,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 75,
+"friction": 0.0,
+"gravity": 9.81,
+"length_m": 0.8,
+"time_s": 0.4109165172693152,
+"speed_m_s": 3.893734938260849,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 75,
+"friction": 0.0,
+"gravity": 1.62,
+"length_m": 0.3,
+"time_s": 0.6192217877094642,
+"speed_m_s": 0.9689581534581225,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 75,
+"friction": 0.0,
+"gravity": 1.62,
+"length_m": 0.8,
+"time_s": 1.0111849450014636,
+"speed_m_s": 1.5823020387212001,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 75,
+"friction": 0.0,
+"gravity": 3.71,
+"length_m": 0.3,
+"time_s": 0.40918224550848553,
+"speed_m_s": 1.4663392817896772,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 75,
+"friction": 0.0,
+"gravity": 3.71,
+"length_m": 0.8,
+"time_s": 0.6681918088680157,
+"speed_m_s": 2.3945220201225776,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 75,
+"friction": 0.1,
+"gravity": 9.81,
+"length_m": 0.3,
+"time_s": 0.25507450273321863,
+"speed_m_s": 2.35225392413109,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 75,
+"friction": 0.1,
+"gravity": 9.81,
+"length_m": 0.8,
+"time_s": 0.41653491872702586,
+"speed_m_s": 3.841214573053724,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 75,
+"friction": 0.1,
+"gravity": 1.62,
+"length_m": 0.3,
+"time_s": 0.6276883166721656,
+"speed_m_s": 0.9558884307119787,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 75,
+"friction": 0.1,
+"gravity": 1.62,
+"length_m": 0.8,
+"time_s": 1.0250107289022061,
+"speed_m_s": 1.5609592708494004,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 75,
+"friction": 0.1,
+"gravity": 3.71,
+"length_m": 0.3,
+"time_s": 0.4147769345219901,
+"speed_m_s": 1.4465606692702677,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 75,
+"friction": 0.1,
+"gravity": 3.71,
+"length_m": 0.8,
+"time_s": 0.6773278977697764,
+"speed_m_s": 2.3622236811273933,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 75,
+"friction": 0.3,
+"gravity": 9.81,
+"length_m": 0.3,
+"time_s": 0.26240140252088157,
+"speed_m_s": 2.286573144182234,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 75,
+"friction": 0.3,
+"gravity": 9.81,
+"length_m": 0.8,
+"time_s": 0.42849969597787957,
+"speed_m_s": 3.7339583085319084,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 75,
+"friction": 0.3,
+"gravity": 1.62,
+"length_m": 0.3,
+"time_s": 0.6457183798296497,
+"speed_m_s": 0.9291976482972174,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 75,
+"friction": 0.3,
+"gravity": 1.62,
+"length_m": 0.8,
+"time_s": 1.0544536987461997,
+"speed_m_s": 1.5173734056815236,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 75,
+"friction": 0.3,
+"gravity": 3.71,
+"length_m": 0.3,
+"time_s": 0.4266912144712297,
+"speed_m_s": 1.4061690975839294,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 75,
+"friction": 0.3,
+"gravity": 3.71,
+"length_m": 0.8,
+"time_s": 0.6967838354553163,
+"speed_m_s": 2.296264520767009,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 75,
+"friction": 0.6,
+"gravity": 9.81,
+"length_m": 0.3,
+"time_s": 0.27468099187908035,
+"speed_m_s": 2.1843520947533603,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 75,
+"friction": 0.6,
+"gravity": 9.81,
+"length_m": 0.8,
+"time_s": 0.4485521814302112,
+"speed_m_s": 3.5670320338168704,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 75,
+"friction": 0.6,
+"gravity": 1.62,
+"length_m": 0.3,
+"time_s": 0.6759360405173382,
+"speed_m_s": 0.8876579499160611,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 75,
+"friction": 0.6,
+"gravity": 1.62,
+"length_m": 0.8,
+"time_s": 1.1037989320164632,
+"speed_m_s": 1.4495393622795572,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 75,
+"friction": 0.6,
+"gravity": 3.71,
+"length_m": 0.3,
+"time_s": 0.44665906847704384,
+"speed_m_s": 1.3433064329037285,
+"will_move": true
+},
+{
+"motion": "slide",
+"angle_deg": 75,
+"friction": 0.6,
+"gravity": 3.71,
+"length_m": 0.8,
+"time_s": 0.7293912045037387,
+"speed_m_s": 2.1936102192082285,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 5,
+"friction": 0.0,
+"gravity": 9.81,
+"length_m": 0.3,
+"time_s": 0.9911905097106902,
+"speed_m_s": 0.6053326722984148,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 5,
+"friction": 0.0,
+"gravity": 9.81,
+"length_m": 0.8,
+"time_s": 1.6186073244535772,
+"speed_m_s": 0.9885041145109986,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 5,
+"friction": 0.0,
+"gravity": 1.62,
+"length_m": 0.3,
+"time_s": 2.4391254158101496,
+"speed_m_s": 0.24598981098342226,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 5,
+"friction": 0.0,
+"gravity": 1.62,
+"length_m": 0.8,
+"time_s": 3.983075124925811,
+"speed_m_s": 0.40169967922204375,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 5,
+"friction": 0.0,
+"gravity": 3.71,
+"length_m": 0.3,
+"time_s": 1.611775997756549,
+"speed_m_s": 0.37226016570239756,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 5,
+"friction": 0.0,
+"gravity": 3.71,
+"length_m": 0.8,
+"time_s": 2.632019182779193,
+"speed_m_s": 0.6078983050231928,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 5,
+"friction": 0.1,
+"gravity": 9.81,
+"length_m": 0.3,
+"time_s": 0.9911905097106902,
+"speed_m_s": 0.6053326722984148,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 5,
+"friction": 0.1,
+"gravity": 9.81,
+"length_m": 0.8,
+"time_s": 1.6186073244535772,
+"speed_m_s": 0.9885041145109986,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 5,
+"friction": 0.1,
+"gravity": 1.62,
+"length_m": 0.3,
+"time_s": 2.4391254158101496,
+"speed_m_s": 0.24598981098342226,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 5,
+"friction": 0.1,
+"gravity": 1.62,
+"length_m": 0.8,
+"time_s": 3.983075124925811,
+"speed_m_s": 0.40169967922204375,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 5,
+"friction": 0.1,
+"gravity": 3.71,
+"length_m": 0.3,
+"time_s": 1.611775997756549,
+"speed_m_s": 0.37226016570239756,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 5,
+"friction": 0.1,
+"gravity": 3.71,
+"length_m": 0.8,
+"time_s": 2.632019182779193,
+"speed_m_s": 0.6078983050231928,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 5,
+"friction": 0.3,
+"gravity": 9.81,
+"length_m": 0.3,
+"time_s": 0.9911905097106902,
+"speed_m_s": 0.6053326722984148,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 5,
+"friction": 0.3,
+"gravity": 9.81,
+"length_m": 0.8,
+"time_s": 1.6186073244535772,
+"speed_m_s": 0.9885041145109986,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 5,
+"friction": 0.3,
+"gravity": 1.62,
+"length_m": 0.3,
+"time_s": 2.4391254158101496,
+"speed_m_s": 0.24598981098342226,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 5,
+"friction": 0.3,
+"gravity": 1.62,
+"length_m": 0.8,
+"time_s": 3.983075124925811,
+"speed_m_s": 0.40169967922204375,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 5,
+"friction": 0.3,
+"gravity": 3.71,
+"length_m": 0.3,
+"time_s": 1.611775997756549,
+"speed_m_s": 0.37226016570239756,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 5,
+"friction": 0.3,
+"gravity": 3.71,
+"length_m": 0.8,
+"time_s": 2.632019182779193,
+"speed_m_s": 0.6078983050231928,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 5,
+"friction": 0.6,
+"gravity": 9.81,
+"length_m": 0.3,
+"time_s": 0.9911905097106902,
+"speed_m_s": 0.6053326722984148,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 5,
+"friction": 0.6,
+"gravity": 9.81,
+"length_m": 0.8,
+"time_s": 1.6186073244535772,
+"speed_m_s": 0.9885041145109986,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 5,
+"friction": 0.6,
+"gravity": 1.62,
+"length_m": 0.3,
+"time_s": 2.4391254158101496,
+"speed_m_s": 0.24598981098342226,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 5,
+"friction": 0.6,
+"gravity": 1.62,
+"length_m": 0.8,
+"time_s": 3.983075124925811,
+"speed_m_s": 0.40169967922204375,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 5,
+"friction": 0.6,
+"gravity": 3.71,
+"length_m": 0.3,
+"time_s": 1.611775997756549,
+"speed_m_s": 0.37226016570239756,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 5,
+"friction": 0.6,
+"gravity": 3.71,
+"length_m": 0.8,
+"time_s": 2.632019182779193,
+"speed_m_s": 0.6078983050231928,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 15,
+"friction": 0.0,
+"gravity": 9.81,
+"length_m": 0.3,
+"time_s": 0.575184301122718,
+"speed_m_s": 1.0431439085330452,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 15,
+"friction": 0.0,
+"gravity": 9.81,
+"length_m": 0.8,
+"time_s": 0.9392720305400057,
+"speed_m_s": 1.703446869465632,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 15,
+"friction": 0.0,
+"gravity": 1.62,
+"length_m": 0.3,
+"time_s": 1.4154157388501565,
+"speed_m_s": 0.4239037220876341,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 15,
+"friction": 0.0,
+"gravity": 1.62,
+"length_m": 0.8,
+"time_s": 2.3113642227248876,
+"speed_m_s": 0.6922318794541804,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 15,
+"friction": 0.0,
+"gravity": 3.71,
+"length_m": 0.3,
+"time_s": 0.9353078361359266,
+"speed_m_s": 0.6415000247178545,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 15,
+"friction": 0.0,
+"gravity": 3.71,
+"length_m": 0.8,
+"time_s": 1.527351300639788,
+"speed_m_s": 1.04756515369436,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 15,
+"friction": 0.1,
+"gravity": 9.81,
+"length_m": 0.3,
+"time_s": 0.575184301122718,
+"speed_m_s": 1.0431439085330452,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 15,
+"friction": 0.1,
+"gravity": 9.81,
+"length_m": 0.8,
+"time_s": 0.9392720305400057,
+"speed_m_s": 1.703446869465632,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 15,
+"friction": 0.1,
+"gravity": 1.62,
+"length_m": 0.3,
+"time_s": 1.4154157388501565,
+"speed_m_s": 0.4239037220876341,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 15,
+"friction": 0.1,
+"gravity": 1.62,
+"length_m": 0.8,
+"time_s": 2.3113642227248876,
+"speed_m_s": 0.6922318794541804,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 15,
+"friction": 0.1,
+"gravity": 3.71,
+"length_m": 0.3,
+"time_s": 0.9353078361359266,
+"speed_m_s": 0.6415000247178545,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 15,
+"friction": 0.1,
+"gravity": 3.71,
+"length_m": 0.8,
+"time_s": 1.527351300639788,
+"speed_m_s": 1.04756515369436,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 15,
+"friction": 0.3,
+"gravity": 9.81,
+"length_m": 0.3,
+"time_s": 0.575184301122718,
+"speed_m_s": 1.0431439085330452,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 15,
+"friction": 0.3,
+"gravity": 9.81,
+"length_m": 0.8,
+"time_s": 0.9392720305400057,
+"speed_m_s": 1.703446869465632,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 15,
+"friction": 0.3,
+"gravity": 1.62,
+"length_m": 0.3,
+"time_s": 1.4154157388501565,
+"speed_m_s": 0.4239037220876341,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 15,
+"friction": 0.3,
+"gravity": 1.62,
+"length_m": 0.8,
+"time_s": 2.3113642227248876,
+"speed_m_s": 0.6922318794541804,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 15,
+"friction": 0.3,
+"gravity": 3.71,
+"length_m": 0.3,
+"time_s": 0.9353078361359266,
+"speed_m_s": 0.6415000247178545,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 15,
+"friction": 0.3,
+"gravity": 3.71,
+"length_m": 0.8,
+"time_s": 1.527351300639788,
+"speed_m_s": 1.04756515369436,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 15,
+"friction": 0.6,
+"gravity": 9.81,
+"length_m": 0.3,
+"time_s": 0.575184301122718,
+"speed_m_s": 1.0431439085330452,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 15,
+"friction": 0.6,
+"gravity": 9.81,
+"length_m": 0.8,
+"time_s": 0.9392720305400057,
+"speed_m_s": 1.703446869465632,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 15,
+"friction": 0.6,
+"gravity": 1.62,
+"length_m": 0.3,
+"time_s": 1.4154157388501565,
+"speed_m_s": 0.4239037220876341,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 15,
+"friction": 0.6,
+"gravity": 1.62,
+"length_m": 0.8,
+"time_s": 2.3113642227248876,
+"speed_m_s": 0.6922318794541804,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 15,
+"friction": 0.6,
+"gravity": 3.71,
+"length_m": 0.3,
+"time_s": 0.9353078361359266,
+"speed_m_s": 0.6415000247178545,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 15,
+"friction": 0.6,
+"gravity": 3.71,
+"length_m": 0.8,
+"time_s": 1.527351300639788,
+"speed_m_s": 1.04756515369436,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 30,
+"friction": 0.0,
+"gravity": 9.81,
+"length_m": 0.3,
+"time_s": 0.4138282525758354,
+"speed_m_s": 1.4498768420603376,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 30,
+"friction": 0.0,
+"gravity": 9.81,
+"length_m": 0.8,
+"time_s": 0.6757787066389301,
+"speed_m_s": 2.3676389686171087,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 30,
+"friction": 0.0,
+"gravity": 1.62,
+"length_m": 0.3,
+"time_s": 1.0183501544346312,
+"speed_m_s": 0.5891883036371794,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 30,
+"friction": 0.0,
+"gravity": 1.62,
+"length_m": 0.8,
+"time_s": 1.6629588385661962,
+"speed_m_s": 0.9621404708847276,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 30,
+"friction": 0.0,
+"gravity": 3.71,
+"length_m": 0.3,
+"time_s": 0.6729265849104532,
+"speed_m_s": 0.8916277250063503,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 30,
+"friction": 0.0,
+"gravity": 3.71,
+"length_m": 0.8,
+"time_s": 1.0988845115895123,
+"speed_m_s": 1.4560219778561034,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 30,
+"friction": 0.1,
+"gravity": 9.81,
+"length_m": 0.3,
+"time_s": 0.4138282525758354,
+"speed_m_s": 1.4498768420603376,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 30,
+"friction": 0.1,
+"gravity": 9.81,
+"length_m": 0.8,
+"time_s": 0.6757787066389301,
+"speed_m_s": 2.3676389686171087,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 30,
+"friction": 0.1,
+"gravity": 1.62,
+"length_m": 0.3,
+"time_s": 1.0183501544346312,
+"speed_m_s": 0.5891883036371794,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 30,
+"friction": 0.1,
+"gravity": 1.62,
+"length_m": 0.8,
+"time_s": 1.6629588385661962,
+"speed_m_s": 0.9621404708847276,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 30,
+"friction": 0.1,
+"gravity": 3.71,
+"length_m": 0.3,
+"time_s": 0.6729265849104532,
+"speed_m_s": 0.8916277250063503,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 30,
+"friction": 0.1,
+"gravity": 3.71,
+"length_m": 0.8,
+"time_s": 1.0988845115895123,
+"speed_m_s": 1.4560219778561034,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 30,
+"friction": 0.3,
+"gravity": 9.81,
+"length_m": 0.3,
+"time_s": 0.4138282525758354,
+"speed_m_s": 1.4498768420603376,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 30,
+"friction": 0.3,
+"gravity": 9.81,
+"length_m": 0.8,
+"time_s": 0.6757787066389301,
+"speed_m_s": 2.3676389686171087,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 30,
+"friction": 0.3,
+"gravity": 1.62,
+"length_m": 0.3,
+"time_s": 1.0183501544346312,
+"speed_m_s": 0.5891883036371794,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 30,
+"friction": 0.3,
+"gravity": 1.62,
+"length_m": 0.8,
+"time_s": 1.6629588385661962,
+"speed_m_s": 0.9621404708847276,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 30,
+"friction": 0.3,
+"gravity": 3.71,
+"length_m": 0.3,
+"time_s": 0.6729265849104532,
+"speed_m_s": 0.8916277250063503,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 30,
+"friction": 0.3,
+"gravity": 3.71,
+"length_m": 0.8,
+"time_s": 1.0988845115895123,
+"speed_m_s": 1.4560219778561034,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 30,
+"friction": 0.6,
+"gravity": 9.81,
+"length_m": 0.3,
+"time_s": 0.4138282525758354,
+"speed_m_s": 1.4498768420603376,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 30,
+"friction": 0.6,
+"gravity": 9.81,
+"length_m": 0.8,
+"time_s": 0.6757787066389301,
+"speed_m_s": 2.3676389686171087,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 30,
+"friction": 0.6,
+"gravity": 1.62,
+"length_m": 0.3,
+"time_s": 1.0183501544346312,
+"speed_m_s": 0.5891883036371794,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 30,
+"friction": 0.6,
+"gravity": 1.62,
+"length_m": 0.8,
+"time_s": 1.6629588385661962,
+"speed_m_s": 0.9621404708847276,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 30,
+"friction": 0.6,
+"gravity": 3.71,
+"length_m": 0.3,
+"time_s": 0.6729265849104532,
+"speed_m_s": 0.8916277250063503,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 30,
+"friction": 0.6,
+"gravity": 3.71,
+"length_m": 0.8,
+"time_s": 1.0988845115895123,
+"speed_m_s": 1.4560219778561034,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 45,
+"friction": 0.0,
+"gravity": 9.81,
+"length_m": 0.3,
+"time_s": 0.3479866941217287,
+"speed_m_s": 1.72420385645583,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 45,
+"friction": 0.0,
+"gravity": 9.81,
+"length_m": 0.8,
+"time_s": 0.5682598919174678,
+"speed_m_s": 2.8156131072371697,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 45,
+"friction": 0.0,
+"gravity": 1.62,
+"length_m": 0.3,
+"time_s": 0.8563269943371479,
+"speed_m_s": 0.7006669227617173,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 45,
+"friction": 0.0,
+"gravity": 1.62,
+"length_m": 0.8,
+"time_s": 1.3983761260647949,
+"speed_m_s": 1.1441842936081865,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 45,
+"friction": 0.0,
+"gravity": 3.71,
+"length_m": 0.3,
+"time_s": 0.5658615529801244,
+"speed_m_s": 1.0603300345112414,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 45,
+"friction": 0.0,
+"gravity": 3.71,
+"length_m": 0.8,
+"time_s": 0.9240480465734499,
+"speed_m_s": 1.7315116956668128,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 45,
+"friction": 0.1,
+"gravity": 9.81,
+"length_m": 0.3,
+"time_s": 0.3479866941217287,
+"speed_m_s": 1.72420385645583,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 45,
+"friction": 0.1,
+"gravity": 9.81,
+"length_m": 0.8,
+"time_s": 0.5682598919174678,
+"speed_m_s": 2.8156131072371697,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 45,
+"friction": 0.1,
+"gravity": 1.62,
+"length_m": 0.3,
+"time_s": 0.8563269943371479,
+"speed_m_s": 0.7006669227617173,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 45,
+"friction": 0.1,
+"gravity": 1.62,
+"length_m": 0.8,
+"time_s": 1.3983761260647949,
+"speed_m_s": 1.1441842936081865,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 45,
+"friction": 0.1,
+"gravity": 3.71,
+"length_m": 0.3,
+"time_s": 0.5658615529801244,
+"speed_m_s": 1.0603300345112414,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 45,
+"friction": 0.1,
+"gravity": 3.71,
+"length_m": 0.8,
+"time_s": 0.9240480465734499,
+"speed_m_s": 1.7315116956668128,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 45,
+"friction": 0.3,
+"gravity": 9.81,
+"length_m": 0.3,
+"time_s": 0.3479866941217287,
+"speed_m_s": 1.72420385645583,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 45,
+"friction": 0.3,
+"gravity": 9.81,
+"length_m": 0.8,
+"time_s": 0.5682598919174678,
+"speed_m_s": 2.8156131072371697,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 45,
+"friction": 0.3,
+"gravity": 1.62,
+"length_m": 0.3,
+"time_s": 0.8563269943371479,
+"speed_m_s": 0.7006669227617173,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 45,
+"friction": 0.3,
+"gravity": 1.62,
+"length_m": 0.8,
+"time_s": 1.3983761260647949,
+"speed_m_s": 1.1441842936081865,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 45,
+"friction": 0.3,
+"gravity": 3.71,
+"length_m": 0.3,
+"time_s": 0.5658615529801244,
+"speed_m_s": 1.0603300345112414,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 45,
+"friction": 0.3,
+"gravity": 3.71,
+"length_m": 0.8,
+"time_s": 0.9240480465734499,
+"speed_m_s": 1.7315116956668128,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 45,
+"friction": 0.6,
+"gravity": 9.81,
+"length_m": 0.3,
+"time_s": 0.3479866941217287,
+"speed_m_s": 1.72420385645583,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 45,
+"friction": 0.6,
+"gravity": 9.81,
+"length_m": 0.8,
+"time_s": 0.5682598919174678,
+"speed_m_s": 2.8156131072371697,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 45,
+"friction": 0.6,
+"gravity": 1.62,
+"length_m": 0.3,
+"time_s": 0.8563269943371479,
+"speed_m_s": 0.7006669227617173,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 45,
+"friction": 0.6,
+"gravity": 1.62,
+"length_m": 0.8,
+"time_s": 1.3983761260647949,
+"speed_m_s": 1.1441842936081865,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 45,
+"friction": 0.6,
+"gravity": 3.71,
+"length_m": 0.3,
+"time_s": 0.5658615529801244,
+"speed_m_s": 1.0603300345112414,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 45,
+"friction": 0.6,
+"gravity": 3.71,
+"length_m": 0.8,
+"time_s": 0.9240480465734499,
+"speed_m_s": 1.7315116956668128,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 60,
+"friction": 0.0,
+"gravity": 9.81,
+"length_m": 0.3,
+"time_s": 0.3144414740379603,
+"speed_m_s": 1.9081452338172356,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 60,
+"friction": 0.0,
+"gravity": 9.81,
+"length_m": 0.8,
+"time_s": 0.5134807769077379,
+"speed_m_s": 3.115988118650619,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 60,
+"friction": 0.0,
+"gravity": 1.62,
+"length_m": 0.3,
+"time_s": 0.773778787828243,
+"speed_m_s": 0.7754154151524543,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 60,
+"friction": 0.0,
+"gravity": 1.62,
+"length_m": 0.8,
+"time_s": 1.2635754693123218,
+"speed_m_s": 1.2662480705412644,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 60,
+"friction": 0.0,
+"gravity": 3.71,
+"length_m": 0.3,
+"time_s": 0.5113136330386188,
+"speed_m_s": 1.173448078108809,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 60,
+"friction": 0.0,
+"gravity": 3.71,
+"length_m": 0.8,
+"time_s": 0.8349716663155324,
+"speed_m_s": 1.9162326873441076,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 60,
+"friction": 0.1,
+"gravity": 9.81,
+"length_m": 0.3,
+"time_s": 0.3144414740379603,
+"speed_m_s": 1.9081452338172356,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 60,
+"friction": 0.1,
+"gravity": 9.81,
+"length_m": 0.8,
+"time_s": 0.5134807769077379,
+"speed_m_s": 3.115988118650619,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 60,
+"friction": 0.1,
+"gravity": 1.62,
+"length_m": 0.3,
+"time_s": 0.773778787828243,
+"speed_m_s": 0.7754154151524543,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 60,
+"friction": 0.1,
+"gravity": 1.62,
+"length_m": 0.8,
+"time_s": 1.2635754693123218,
+"speed_m_s": 1.2662480705412644,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 60,
+"friction": 0.1,
+"gravity": 3.71,
+"length_m": 0.3,
+"time_s": 0.5113136330386188,
+"speed_m_s": 1.173448078108809,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 60,
+"friction": 0.1,
+"gravity": 3.71,
+"length_m": 0.8,
+"time_s": 0.8349716663155324,
+"speed_m_s": 1.9162326873441076,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 60,
+"friction": 0.3,
+"gravity": 9.81,
+"length_m": 0.3,
+"time_s": 0.3144414740379603,
+"speed_m_s": 1.9081452338172356,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 60,
+"friction": 0.3,
+"gravity": 9.81,
+"length_m": 0.8,
+"time_s": 0.5134807769077379,
+"speed_m_s": 3.115988118650619,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 60,
+"friction": 0.3,
+"gravity": 1.62,
+"length_m": 0.3,
+"time_s": 0.773778787828243,
+"speed_m_s": 0.7754154151524543,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 60,
+"friction": 0.3,
+"gravity": 1.62,
+"length_m": 0.8,
+"time_s": 1.2635754693123218,
+"speed_m_s": 1.2662480705412644,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 60,
+"friction": 0.3,
+"gravity": 3.71,
+"length_m": 0.3,
+"time_s": 0.5113136330386188,
+"speed_m_s": 1.173448078108809,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 60,
+"friction": 0.3,
+"gravity": 3.71,
+"length_m": 0.8,
+"time_s": 0.8349716663155324,
+"speed_m_s": 1.9162326873441076,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 60,
+"friction": 0.6,
+"gravity": 9.81,
+"length_m": 0.3,
+"time_s": 0.3144414740379603,
+"speed_m_s": 1.9081452338172356,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 60,
+"friction": 0.6,
+"gravity": 9.81,
+"length_m": 0.8,
+"time_s": 0.5134807769077379,
+"speed_m_s": 3.115988118650619,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 60,
+"friction": 0.6,
+"gravity": 1.62,
+"length_m": 0.3,
+"time_s": 0.773778787828243,
+"speed_m_s": 0.7754154151524543,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 60,
+"friction": 0.6,
+"gravity": 1.62,
+"length_m": 0.8,
+"time_s": 1.2635754693123218,
+"speed_m_s": 1.2662480705412644,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 60,
+"friction": 0.6,
+"gravity": 3.71,
+"length_m": 0.3,
+"time_s": 0.5113136330386188,
+"speed_m_s": 1.173448078108809,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 60,
+"friction": 0.6,
+"gravity": 3.71,
+"length_m": 0.8,
+"time_s": 0.8349716663155324,
+"speed_m_s": 1.9162326873441076,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 75,
+"friction": 0.0,
+"gravity": 9.81,
+"length_m": 0.3,
+"time_s": 0.2977373031490852,
+"speed_m_s": 2.0151992835763797,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 75,
+"friction": 0.0,
+"gravity": 9.81,
+"length_m": 0.8,
+"time_s": 0.48620298007173995,
+"speed_m_s": 3.2908066498562345,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 75,
+"friction": 0.0,
+"gravity": 1.62,
+"length_m": 0.3,
+"time_s": 0.7326730999045528,
+"speed_m_s": 0.8189191060490192,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 75,
+"friction": 0.0,
+"gravity": 1.62,
+"length_m": 0.8,
+"time_s": 1.196450162019571,
+"speed_m_s": 1.3372893002908282,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 75,
+"friction": 0.0,
+"gravity": 3.71,
+"length_m": 0.3,
+"time_s": 0.484150962051211,
+"speed_m_s": 1.2392828828801028,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 75,
+"friction": 0.0,
+"gravity": 3.71,
+"length_m": 0.8,
+"time_s": 0.7906152103353661,
+"speed_m_s": 2.0237404733477193,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 75,
+"friction": 0.1,
+"gravity": 9.81,
+"length_m": 0.3,
+"time_s": 0.2977373031490852,
+"speed_m_s": 2.0151992835763797,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 75,
+"friction": 0.1,
+"gravity": 9.81,
+"length_m": 0.8,
+"time_s": 0.48620298007173995,
+"speed_m_s": 3.2908066498562345,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 75,
+"friction": 0.1,
+"gravity": 1.62,
+"length_m": 0.3,
+"time_s": 0.7326730999045528,
+"speed_m_s": 0.8189191060490192,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 75,
+"friction": 0.1,
+"gravity": 1.62,
+"length_m": 0.8,
+"time_s": 1.196450162019571,
+"speed_m_s": 1.3372893002908282,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 75,
+"friction": 0.1,
+"gravity": 3.71,
+"length_m": 0.3,
+"time_s": 0.484150962051211,
+"speed_m_s": 1.2392828828801028,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 75,
+"friction": 0.1,
+"gravity": 3.71,
+"length_m": 0.8,
+"time_s": 0.7906152103353661,
+"speed_m_s": 2.0237404733477193,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 75,
+"friction": 0.3,
+"gravity": 9.81,
+"length_m": 0.3,
+"time_s": 0.2977373031490852,
+"speed_m_s": 2.0151992835763797,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 75,
+"friction": 0.3,
+"gravity": 9.81,
+"length_m": 0.8,
+"time_s": 0.48620298007173995,
+"speed_m_s": 3.2908066498562345,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 75,
+"friction": 0.3,
+"gravity": 1.62,
+"length_m": 0.3,
+"time_s": 0.7326730999045528,
+"speed_m_s": 0.8189191060490192,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 75,
+"friction": 0.3,
+"gravity": 1.62,
+"length_m": 0.8,
+"time_s": 1.196450162019571,
+"speed_m_s": 1.3372893002908282,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 75,
+"friction": 0.3,
+"gravity": 3.71,
+"length_m": 0.3,
+"time_s": 0.484150962051211,
+"speed_m_s": 1.2392828828801028,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 75,
+"friction": 0.3,
+"gravity": 3.71,
+"length_m": 0.8,
+"time_s": 0.7906152103353661,
+"speed_m_s": 2.0237404733477193,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 75,
+"friction": 0.6,
+"gravity": 9.81,
+"length_m": 0.3,
+"time_s": 0.2977373031490852,
+"speed_m_s": 2.0151992835763797,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 75,
+"friction": 0.6,
+"gravity": 9.81,
+"length_m": 0.8,
+"time_s": 0.48620298007173995,
+"speed_m_s": 3.2908066498562345,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 75,
+"friction": 0.6,
+"gravity": 1.62,
+"length_m": 0.3,
+"time_s": 0.7326730999045528,
+"speed_m_s": 0.8189191060490192,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 75,
+"friction": 0.6,
+"gravity": 1.62,
+"length_m": 0.8,
+"time_s": 1.196450162019571,
+"speed_m_s": 1.3372893002908282,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 75,
+"friction": 0.6,
+"gravity": 3.71,
+"length_m": 0.3,
+"time_s": 0.484150962051211,
+"speed_m_s": 1.2392828828801028,
+"will_move": true
+},
+{
+"motion": "roll",
+"angle_deg": 75,
+"friction": 0.6,
+"gravity": 3.71,
+"length_m": 0.8,
+"time_s": 0.7906152103353661,
+"speed_m_s": 2.0237404733477193,
+"will_move": true
+}
+]

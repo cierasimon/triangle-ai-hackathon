@@ -1,6 +1,6 @@
 """FastAPI app: /api routers, the share page, and the built frontend at /."""
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 
@@ -31,3 +31,12 @@ def index():
         '<a href="http://localhost:5173">http://localhost:5173</a>, '
         "or run <code>make build</code>.</p>"
     )
+
+
+@app.get("/{name}", include_in_schema=False)
+def root_file(name: str):
+    """Files Vite copies to the build root (favicon etc.), never outside frontend/dist."""
+    path = (FRONTEND_DIST / name).resolve()
+    if path.parent == FRONTEND_DIST.resolve() and path.is_file():
+        return FileResponse(path)
+    raise HTTPException(404, "not found")

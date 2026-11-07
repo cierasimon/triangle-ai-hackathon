@@ -44,6 +44,10 @@ async def upload(photo: UploadFile, session: store.Session = Depends(store.sessi
                                content_type=photo.content_type or "application/octet-stream",
                                original=data)
     session.images[image_id] = stored
+    session.current_image_id = image_id
+    # a new photo is a new experiment: runs restart at Run 1 (the event log and profile stay)
+    session.runs.clear()
+    session.quizzes.clear()
     rec = _recognize(stored, cap.capture(image))
     session.log("upload", image_id=image_id, filename=photo.filename, warnings=rec.warnings)
     return UploadResponse(

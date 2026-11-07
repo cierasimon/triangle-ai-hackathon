@@ -29,6 +29,8 @@ class Session:
     events: list[Event] = field(default_factory=list)
     profile: LearnerProfile = field(default_factory=LearnerProfile)
     started: float = field(default_factory=time.time)
+    current_image_id: str | None = None  # the latest upload; runs and the TA use it
+    quizzes: dict[str, dict] = field(default_factory=dict)  # quiz_id -> pending what-if
 
     def log(self, kind: EventKind, **data) -> Event:
         event = Event(t=round(time.time() - self.started, 3), kind=kind, data=data)
@@ -46,8 +48,11 @@ class Session:
 @dataclass
 class Share:
     share_id: str
-    gif: bytes
+    data: bytes  # GIF, or a PNG still if the GIF failed
+    media_type: str
     run_id: str
+    title: str  # "Run 2"
+    lines: tuple[str, ...] = ()  # card text shown on the download page
 
 
 _sessions: dict[str, Session] = {}

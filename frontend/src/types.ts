@@ -113,6 +113,7 @@ export type ParamsOverride = Partial<Pick<Params, "angle_deg" | "mass_kg" | "gra
 export interface RunRequest {
   image_id: string;
   params_override?: ParamsOverride | null;
+  reason?: "change" | "drag"; // "drag" logs a drag_rerun event
 }
 
 export interface PredictResponse {
@@ -136,7 +137,7 @@ export interface WhyCard {
 
 export interface LearnerProfile {
   level: Level;
-  concepts_seen: Record<"mass_independent" | "angle_effect" | "gravity_effect" | "friction_effect", boolean>;
+  concepts_seen: Record<"mass_independent" | "angle_effect" | "gravity_effect" | "friction_effect" | "roll_effect", boolean>;
   runs: number;
 }
 
@@ -152,11 +153,22 @@ export interface AskRequest {
   level: Level;
 }
 
+export interface FollowUp {
+  text: string;
+  change: ParamsOverride;
+  concept: string;
+}
+
 export interface AskResponse {
   answer_md: string;
-  based_on: string[];
-  flags: string[];
-  followups: string[];
+  based_on: string[]; // run ids the answer relies on
+  flags: string[]; // numbers matching nothing in the context, as written in the answer
+  followups: FollowUp[];
+  source: "llm" | "template";
+}
+
+export interface SummaryRequest {
+  level: Level;
 }
 
 export interface SummaryResponse {
