@@ -218,3 +218,13 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# PaperPhysics generated data
+data/generated/
+data/raw/
+data/processed/
+models/
+runs/
+*.pt
+*.onnx
+*.zip
