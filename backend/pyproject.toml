@@ -1,0 +1,33 @@
+[project]
+name = "paperphysics"
+version = "0.1.0"
+description = "Draw a ramp and a ball on paper, photograph it, get a verified simulation."
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.30",
+    "python-multipart>=0.0.9",
+    "pydantic>=2.7",
+    "opencv-python-headless>=4.10",
+    "numpy>=1.26",
+    "pymunk>=6.8",
+    "sympy>=1.13",
+    "pillow>=10.4",
+    "httpx>=0.27",
+    "qrcode>=7.4",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.2"]
+
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["app*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = ["live_llm: hits the real OpenRouter API (opt-in: pytest -m live_llm)"]
+addopts = "-m 'not live_llm'"

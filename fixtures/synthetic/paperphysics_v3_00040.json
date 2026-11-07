@@ -1,0 +1,158 @@
+{
+  "image": "images/paperphysics_v3_00040.png",
+  "width": 768,
+  "height": 576,
+  "scene_type": "plain",
+  "primary_type": "ball",
+  "collision_target_surface": null,
+  "collision_target_type": null,
+  "ramp_rises": "left",
+  "detail_level": "core",
+  "objects": [
+    {
+      "id": "ramp_0",
+      "class": "ramp",
+      "role": "ramp",
+      "polygon_xy": [
+        [
+          567.0,
+          464.0
+        ],
+        [
+          299.65,
+          239.67
+        ],
+        [
+          299.65,
+          464.0
+        ]
+      ],
+      "bbox_xyxy": [
+        297.65,
+        237.67,
+        569.0,
+        466.0
+      ],
+      "low_point_xy": [
+        567.0,
+        464.0
+      ],
+      "high_point_xy": [
+        299.65,
+        239.67
+      ],
+      "angle_degrees": 40
+    },
+    {
+      "id": "primary_1",
+      "class": "ball",
+      "role": "primary",
+      "polygon_xy": [
+        [
+          348.58,
+          248.47
+        ],
+        [
+          392.58,
+          248.47
+        ],
+        [
+          392.58,
+          292.47
+        ],
+        [
+          348.58,
+          292.47
+        ]
+      ],
+      "bbox_xyxy": [
+        346.58,
+        246.47,
+        394.58,
+        294.47
+      ],
+      "support_surface": "ramp",
+      "contact_point_xy": [
+        356.44,
+        287.32
+      ],
+      "center_xy": [
+        370.58,
+        270.47
+      ],
+      "radius_px": 22.0
+    }
+  ],
+  "physics": {
+    "angle_degrees": {
+      "value": 40,
+      "shown_on_image": true
+    },
+    "mass1_kg": {
+      "value": 3.8,
+      "shown_on_image": true
+    },
+    "initial_speed_m_s": {
+      "value": 0,
+      "shown_on_image": false
+    },
+    "motion_direction": "stationary",
+    "kinetic_friction_coefficient": {
+      "value": 0.27,
+      "shown_on_image": true
+    },
+    "gravity_m_s2": {
+      "value": 9.81,
+      "shown_on_image": false
+    },
+    "mass2_kg": null,
+    "target_initial_speed_m_s": null,
+    "restitution": null,
+    "spring_constant_N_m": null,
+    "spring_compression_m": null
+  },
+  "text_annotations": [
+    {
+      "parameter_key": "angle_degrees",
+      "value": 40,
+      "text": "θ=40°",
+      "related_object_id": "ramp_0",
+      "placement": "angle_at_corner",
+      "bbox_xyxy": [
+        474.28,
+        432.12,
+        526.28,
+        446.12
+      ]
+    },
+    {
+      "parameter_key": "mass1_kg",
+      "value": 3.8,
+      "text": "m1=3.8kg",
+      "related_object_id": "primary_1",
+      "placement": "next_to_primary",
+      "bbox_xyxy": [
+        362.57,
+        178.89,
+        448.57,
+        196.89
+      ]
+    },
+    {
+      "parameter_key": "kinetic_friction_coefficient",
+      "value": 0.27,
+      "text": "μ=0.27",
+      "related_object_id": "ramp_0",
+      "placement": "under_ramp",
+      "bbox_xyxy": [
+        374.35,
+        376.57,
+        434.35,
+        394.57
+      ]
+    }
+  ],
+  "arrows": [],
+  "ground_y_px": 464.0,
+  "generator_seed": 20665227
+}

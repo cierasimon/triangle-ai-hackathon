@@ -1,0 +1,44 @@
+:root {
+  --bg: #fafaf7;
+  --fg: #1a1a1a;
+  --muted: #6b6b6b;
+  --card: #ffffff;
+  --border: #e3e3dd;
+  --accent: #111111;
+  --bad: #dc2626;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  color: var(--fg);
+  background: var(--bg);
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); }
+main { max-width: 1100px; margin: 0 auto; padding: 16px; }
+header { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+h1 { margin: 0; font-size: 1.5rem; }
+h2 { margin: 0 0 8px; font-size: 1.1rem; }
+
+.upload {
+  display: inline-block; padding: 12px 18px; border-radius: 8px;
+  background: var(--accent); color: #fff; cursor: pointer; font-weight: 600;
+}
+.upload input { display: none; }
+
+.grid { display: grid; grid-template-columns: 1fr; gap: 16px; margin-top: 16px; }
+@media (min-width: 800px) { .grid { grid-template-columns: 1fr 1fr; } }
+section { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 12px; min-width: 0; }
+section img { width: 100%; border-radius: 6px; display: block; }
+
+.run-canvas canvas { width: 100%; aspect-ratio: 4 / 3; background: #fff; border: 1px solid var(--border); border-radius: 6px; touch-action: none; }
+.row { display: flex; gap: 8px; align-items: center; margin: 8px 0; }
+button { padding: 8px 14px; border-radius: 6px; border: 1px solid var(--border); background: #fff; font: inherit; cursor: pointer; }
+button:disabled { opacity: 0.5; cursor: default; }
+
+table { width: 100%; border-collapse: collapse; margin: 8px 0; font-variant-numeric: tabular-nums; }
+th, td { text-align: left; padding: 4px 6px; border-bottom: 1px solid var(--border); }
+tr.bad td { color: var(--bad); font-weight: 600; }
+.badge { font-size: 0.75rem; padding: 2px 6px; border-radius: 999px; background: #eee; }
+.muted { color: var(--muted); font-size: 0.9rem; }
+.warnings { color: #92400e; background: #fef3c7; border-radius: 6px; padding: 8px 8px 8px 28px; margin: 8px 0; }
+.error { color: var(--bad); }
+.katex-display { overflow-x: auto; overflow-y: hidden; }

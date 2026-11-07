@@ -228,3 +228,7 @@ runs/
 *.pt
 *.onnx
 *.zip
+
+# PaperPhysics app
+node_modules/
+.DS_Store

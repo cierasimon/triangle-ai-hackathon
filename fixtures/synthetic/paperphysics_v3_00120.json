@@ -1,0 +1,118 @@
+{
+  "image": "images/paperphysics_v3_00120.png",
+  "width": 768,
+  "height": 576,
+  "scene_type": "plain",
+  "primary_type": "ball",
+  "collision_target_surface": null,
+  "collision_target_type": null,
+  "ramp_rises": "right",
+  "detail_level": "geometry_only",
+  "objects": [
+    {
+      "id": "ramp_0",
+      "class": "ramp",
+      "role": "ramp",
+      "polygon_xy": [
+        [
+          180.0,
+          463.0
+        ],
+        [
+          531.03,
+          328.25
+        ],
+        [
+          531.03,
+          463.0
+        ]
+      ],
+      "bbox_xyxy": [
+        178.0,
+        326.25,
+        533.03,
+        465.0
+      ],
+      "low_point_xy": [
+        180.0,
+        463.0
+      ],
+      "high_point_xy": [
+        531.03,
+        328.25
+      ],
+      "angle_degrees": 21
+    },
+    {
+      "id": "primary_1",
+      "class": "ball",
+      "role": "primary",
+      "polygon_xy": [
+        [
+          427.59,
+          309.04
+        ],
+        [
+          475.59,
+          309.04
+        ],
+        [
+          475.59,
+          357.04
+        ],
+        [
+          427.59,
+          357.04
+        ]
+      ],
+      "bbox_xyxy": [
+        425.59,
+        307.04,
+        477.59,
+        359.04
+      ],
+      "support_surface": "ramp",
+      "contact_point_xy": [
+        460.19,
+        355.44
+      ],
+      "center_xy": [
+        451.59,
+        333.04
+      ],
+      "radius_px": 24.0
+    }
+  ],
+  "physics": {
+    "angle_degrees": {
+      "value": 21,
+      "shown_on_image": false
+    },
+    "mass1_kg": {
+      "value": 3.8,
+      "shown_on_image": false
+    },
+    "initial_speed_m_s": {
+      "value": 0,
+      "shown_on_image": false
+    },
+    "motion_direction": "stationary",
+    "kinetic_friction_coefficient": {
+      "value": 0.33,
+      "shown_on_image": false
+    },
+    "gravity_m_s2": {
+      "value": 9.81,
+      "shown_on_image": false
+    },
+    "mass2_kg": null,
+    "target_initial_speed_m_s": null,
+    "restitution": null,
+    "spring_constant_N_m": null,
+    "spring_compression_m": null
+  },
+  "text_annotations": [],
+  "arrows": [],
+  "ground_y_px": 463.0,
+  "generator_seed": 21473467
+}
