@@ -1,0 +1,30 @@
+{
+  "dataset": "PaperPhysics V3",
+  "num_images": 3000,
+  "image_size": [
+    768,
+    576
+  ],
+  "seed": 20261107,
+  "classes": [
+    "ball",
+    "block",
+    "ramp",
+    "spring"
+  ],
+  "distribution": {
+    "ball_plain": 375,
+    "block_plain": 375,
+    "ball_spring": 375,
+    "block_spring": 375,
+    "ball_collision_ramp": 375,
+    "ball_collision_flat": 375,
+    "block_collision_ramp": 375,
+    "block_collision_flat": 375
+  },
+  "splits": {
+    "train": 2400,
+    "val": 304,
+    "test": 296
+  }
+}
