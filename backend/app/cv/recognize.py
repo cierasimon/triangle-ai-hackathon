@@ -405,6 +405,7 @@ def recognize(cap: Capture, image_id: str) -> Result:
 
     lines: list[Line] = []
     ball = None
+    balls = []
     if pair is None:
         warnings.append("no ramp found — draw one straight slanted line meeting a flat ground line")
     else:
@@ -437,6 +438,14 @@ def recognize(cap: Capture, image_id: str) -> Result:
                  confidence=round(ground.coverage, 3)),
         ]
         ball, ball_warnings = pick_ball(up_circles, low, high, stroke)
+        candidates = ramp_ball_candidates(up_circles, low, high, stroke)
+        balls = [Ball(center=tuple(c.center), radius=c.radius, confidence=round(c.score, 3))
+                 for _, c in sorted(candidates, key=lambda tc: tc[0])]
+        if ball is not None:
+            # Always retain the historical primary even if other candidate filters exclude it.
+            if not any(math.dist(b.center, ball.center) < .6 * max(b.radius, ball.radius) for b in balls):
+                balls.append(ball)
+            balls.sort(key=lambda b: math.dist(b.center, ball.center))
         warnings += ball_warnings
 
     rec = Recognition(
@@ -446,6 +455,8 @@ def recognize(cap: Capture, image_id: str) -> Result:
         warped_size=(up_w, up_h),
         lines=lines,
         ball=ball,
+        balls=balls,
+        selected_ball_index=0 if balls else None,
         labels=[],
         warnings=warnings,
     )
@@ -453,9 +464,18 @@ def recognize(cap: Capture, image_id: str) -> Result:
                   debug={"segments": len(segs), "circles": len(circles), "stroke": stroke})
 
 
-def pick_ball(circles: list[Circle], low: np.ndarray, high: np.ndarray,
-              stroke: float) -> tuple[Ball | None, list[str]]:
-    warnings = []
+def ramp_ball_candidates(circles: list[Circle], low: np.ndarray, high: np.ndarray,
+                         stroke: float) -> list[tuple[float, Circle]]:
+    """Keep all plausible circles, including floating ones, for recognition/selection."""
+    on, floating = _ball_pools(circles, low, high, stroke)
+    pool = on + floating
+    if not pool:
+        return []
+    biggest = max(c.radius for _, c in pool)
+    return [(t, c) for t, c in pool if c.radius >= .5 * biggest]
+
+
+def _ball_pools(circles: list[Circle], low: np.ndarray, high: np.ndarray, stroke: float):
     on, floating = [], []
     for c in circles:
         t, d = _ramp_coords(c.center, low, high)
@@ -465,6 +485,13 @@ def pick_ball(circles: list[Circle], low: np.ndarray, high: np.ndarray,
             on.append((t, c))
         elif 2.2 * c.radius + stroke < d <= 8 * c.radius or t < -0.02 and d > 0:
             floating.append((t, c))
+    return on, floating
+
+
+def pick_ball(circles: list[Circle], low: np.ndarray, high: np.ndarray,
+              stroke: float) -> tuple[Ball | None, list[str]]:
+    warnings = []
+    on, floating = _ball_pools(circles, low, high, stroke)
     pool = on or floating
     if pool:
         # loops in handwriting ("o", "g", "°") are much smaller than a drawn ball
@@ -473,7 +500,7 @@ def pick_ball(circles: list[Circle], low: np.ndarray, high: np.ndarray,
     if not pool:
         return None, ["no ball found — draw a circle on the ramp"]
     if len(pool) > 1:
-        warnings.append(f"{len(pool)} balls found — using the one nearest the top of the ramp")
+        warnings.append(f"{len(pool)} balls found — retained all; default primary is nearest the ramp top")
     t, c = min(pool, key=lambda tc: tc[0])
     if not on:
         warnings.append("ball is not touching the ramp — placed it on the ramp")
@@ -488,9 +515,21 @@ def overlay_png(image: np.ndarray, rec: Recognition) -> bytes:
     colors = {"ramp": (220, 38, 38), "ground": (37, 99, 235)}
     for line in rec.lines:
         draw.line([line.p1, line.p2], fill=colors[line.role], width=width)
-    if rec.ball:
-        (cx, cy), r = rec.ball.center, rec.ball.radius
+    for index, detected in enumerate(rec.balls or ([rec.ball] if rec.ball else [])):
+        (cx, cy), r = detected.center, detected.radius
         draw.ellipse([cx - r, cy - r, cx + r, cy + r], outline=(22, 163, 74), width=width)
+        draw.text((cx + r + width, cy - r), f"ball {index + 1}", fill=(22, 120, 60),
+                  font_size=max(14, width * 3))
+    for obj in rec.objects:
+        if obj.kind in {"ball", "block"} and obj.geometry_verified:
+            continue
+        color = (180, 110, 10)
+        draw.rectangle(obj.bbox, outline=color, width=max(2, width // 2))
+        draw.text((obj.bbox[0], max(0, obj.bbox[1] - 20)),
+                  f"{obj.kind} (Gemini proposal)", fill=color, font_size=max(14, width * 2))
+    for index, block in enumerate(rec.blocks):
+        draw.line([*block.vertices, block.vertices[0]], fill=(147, 51, 234), width=width)
+        draw.text(block.vertices[0], f"block {index+1}", fill=(147, 51, 234), font_size=max(14,width*3))
     buf = io.BytesIO()
     pil.save(buf, format="PNG")
     return buf.getvalue()
