@@ -19,6 +19,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["pytest>=8.2"]
+vision = ["google-genai>=3.0,<4"]
 
 [build-system]
 requires = ["setuptools>=69"]

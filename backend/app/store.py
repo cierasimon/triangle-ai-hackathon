@@ -16,6 +16,7 @@ class StoredImage:
     image_id: str
     content_type: str
     original: bytes
+    vision_mode: str = "opencv"
     overlay_png: bytes | None = None
     overlay_version: int = 0  # bumped when /corners redoes recognition (cache-busting URL)
     recognition: Recognition | None = None

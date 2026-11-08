@@ -32,6 +32,9 @@ class Settings:
     llm_fallback_model: str
     llm_vision_model: str
     public_base_url: str
+    google_cloud_project: str = ""
+    google_cloud_location: str = "global"
+    gemini_vision_model: str = "gemini-3.5-flash-lite"
 
     @property
     def llm_enabled(self) -> bool:
@@ -48,4 +51,7 @@ def get_settings() -> Settings:
         llm_fallback_model=os.environ.get("LLM_FALLBACK_MODEL", "openrouter/free"),
         llm_vision_model=os.environ.get("LLM_VISION_MODEL", "nvidia/nemotron-3.5-super-vl:free"),
         public_base_url=os.environ.get("PUBLIC_BASE_URL", "http://localhost:8000").rstrip("/"),
+        google_cloud_project=os.environ.get("GOOGLE_CLOUD_PROJECT", ""),
+        google_cloud_location=os.environ.get("GOOGLE_CLOUD_LOCATION", "global"),
+        gemini_vision_model=os.environ.get("GEMINI_VISION_MODEL", "gemini-3.5-flash-lite"),
     )

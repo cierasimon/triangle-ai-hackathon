@@ -1,9 +1,11 @@
 """POST /upload, POST /corners, GET /files/...: photo → capture → recognition → overlay."""
 
 import logging
+from typing import Literal
 
-from fastapi import APIRouter, Depends, HTTPException, UploadFile
+from fastapi import APIRouter, Depends, Form, HTTPException, UploadFile
 from fastapi.responses import Response
+from starlette.concurrency import run_in_threadpool
 
 from app import store
 from app.contracts import CornersRequest, Recognition, UploadResponse
@@ -18,6 +20,9 @@ def _recognize(stored: store.StoredImage, result: cap.Capture) -> Recognition:
     """Run recognition and keep the overlay; never fails the request on a CV bug."""
     try:
         res = recognize(result, stored.image_id)
+        if stored.vision_mode == "hybrid":
+            from app.cv.hybrid import assist
+            res = assist(res)
         rec, image = res.recognition, res.image
     except Exception:  # keep the demo alive: report it as a warning instead
         log.exception("recognition failed for %s", stored.image_id)
@@ -33,7 +38,8 @@ def _recognize(stored: store.StoredImage, result: cap.Capture) -> Recognition:
 
 
 @router.post("/upload", response_model=UploadResponse)
-async def upload(photo: UploadFile, session: store.Session = Depends(store.session_dep)):
+async def upload(photo: UploadFile, session: store.Session = Depends(store.session_dep),
+                 vision_mode: Literal["opencv", "hybrid"] = Form("opencv")):
     data = await photo.read()
     try:
         image = cap.load_image(data)
@@ -43,12 +49,13 @@ async def upload(photo: UploadFile, session: store.Session = Depends(store.sessi
     stored = store.StoredImage(image_id=image_id,
                                content_type=photo.content_type or "application/octet-stream",
                                original=data)
+    stored.vision_mode = vision_mode
     session.images[image_id] = stored
     session.current_image_id = image_id
     # a new photo is a new experiment: runs restart at Run 1 (the event log and profile stay)
     session.runs.clear()
     session.quizzes.clear()
-    rec = _recognize(stored, cap.capture(image))
+    rec = await run_in_threadpool(lambda: _recognize(stored, cap.capture(image)))
     session.log("upload", image_id=image_id, filename=photo.filename, warnings=rec.warnings)
     return UploadResponse(
         image_id=image_id,

@@ -8,7 +8,7 @@ Scene/Frame are physics (meters/seconds/radians, y up).
 
 from typing import Literal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 Point = tuple[float, float]
 Motion = Literal["slide", "roll"]
@@ -33,6 +33,32 @@ class Ball(BaseModel):
     sprite_png_b64: str | None = None
 
 
+class DetectedObject(BaseModel):
+    kind: Literal["ball", "block", "ramp", "spring", "platform", "wall"]
+    bbox: tuple[float, float, float, float]
+    confidence: float
+    geometry_verified: bool = False
+    body_id: str | None = None
+
+
+class Block(BaseModel):
+    vertices: list[Point] = Field(min_length=4, max_length=4)
+    center: Point
+    confidence: float
+
+
+class DiagramParameter(BaseModel):
+    key: str
+    value: float | None = Field(default=None, allow_inf_nan=False)
+    unit: str = ""
+    text: str
+    target: str = "scene"  # scene, ball-1, block-1, or unresolved
+    confidence: float = Field(ge=0, le=1)
+    validated: bool = False  # Recognized and eligible; does not imply physics support.
+    applied: bool = False
+    note: str = ""
+
+
 class Label(BaseModel):
     """A handwritten value such as "30°" or "2 kg"."""
 
@@ -49,6 +75,15 @@ class Recognition(BaseModel):
     warped_size: tuple[int, int]  # (w, h) of the flattened paper
     lines: list[Line]
     ball: Ball | None
+    balls: list[Ball] = []  # All detected balls; ball remains the selected simulation object.
+    blocks: list[Block] = []
+    parameters: list[DiagramParameter] = []
+    selected_ball_index: int | None = None
+    objects: list[DetectedObject] = []
+    recognition_mode: Literal["opencv", "hybrid"] = "opencv"
+    gemini_status: Literal["disabled", "success", "failed", "unavailable"] = "disabled"
+    gemini_model: str | None = None
+    gemini_summary: str | None = None
     labels: list[Label] = []
     warnings: list[str] = []
 
