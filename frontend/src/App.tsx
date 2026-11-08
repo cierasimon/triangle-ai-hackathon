@@ -4,6 +4,7 @@ import { Compare } from "./components/Compare";
 import { Controls } from "./components/Controls";
 import { ExportPanel } from "./components/ExportPanel";
 import { Formula } from "./components/Formula";
+import { RecognitionDetails } from "./components/RecognitionDetails";
 import { SceneCanvas } from "./components/SceneCanvas";
 import { TaDrawer } from "./components/TaDrawer";
 import { duration } from "./geometry";
@@ -41,6 +42,7 @@ export function App() {
   const [error, setError] = useState<string | null>(null);
   const [dragAngle, setDragAngle] = useState<number | null>(null);
   const [snap, setSnap] = useState(false);
+  const [useGemini, setUseGemini] = useState(true);
   const releaseTimer = useRef<number | undefined>(undefined);
 
   const run = runs.find((r) => r.run_id === currentId) ?? null;
@@ -53,10 +55,13 @@ export function App() {
     setRuns([]);
     setCurrentId(null);
     setOverride({});
+    setUpload(null);
     try {
-      const up = await api.upload(file);
+      const up = await api.upload(file, useGemini ? "hybrid" : "opencv");
       setUpload(up);
-      await requestRun(up.image_id, {}, "change");
+      if (up.recognition.ball && up.recognition.lines.some(line => line.role === "ramp")) {
+        await requestRun(up.image_id, {}, "change");
+      }
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
     } finally {
@@ -130,6 +135,13 @@ export function App() {
           />
         </label>
       </header>
+      <label className="muted check">
+        <input type="checkbox" checked={useGemini} disabled={busy}
+          onChange={e => setUseGemini(e.target.checked)} /> Use Gemini + OpenCV recognition
+      </label>
+      <p className="muted">When enabled, uploads are sent to Google Cloud and may incur API charges.
+        Turn off for local OpenCV recognition. This choice applies to the next upload.</p>
+      {busy && !run && <p role="status">{useGemini ? "Recognizing with Gemini and OpenCV…" : "Recognizing locally…"}</p>}
       {error && <p className="error">{error}</p>}
 
       {upload && (
@@ -137,6 +149,7 @@ export function App() {
           <section>
             <h2>Recognized</h2>
             <img src={upload.overlay_png_url} alt="photo with recognized outlines" />
+            {rec && <RecognitionDetails recognition={rec} />}
             {rec && rec.warnings.length > 0 && (
               <ul className="warnings">
                 {rec.warnings.map((w) => <li key={w}>{w}</li>)}

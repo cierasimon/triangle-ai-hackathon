@@ -2,7 +2,7 @@
 import type {
   AskRequest, AskResponse, CornersRequest, ExportResponse, FollowUp, Level, PredictResponse,
   QuizPrompt, QuizResult, Recognition, Run, RunRequest, SessionState, SummaryResponse,
-  UploadResponse, WhyCard, WhyCardRequest,
+  UploadResponse, WhyCard, WhyCardRequest, VisionMode,
 } from "./types";
 
 async function call<T>(path: string, init?: RequestInit): Promise<T> {
@@ -28,9 +28,10 @@ const post = <T>(path: string, body?: unknown) =>
   });
 
 export const api = {
-  upload(photo: File) {
+  upload(photo: File, mode: VisionMode = "opencv") {
     const form = new FormData();
     form.append("photo", photo);
+    form.append("vision_mode", mode);
     return call<UploadResponse>("/upload", { method: "POST", body: form });
   },
   corners: (body: CornersRequest) => post<Recognition>("/corners", body),

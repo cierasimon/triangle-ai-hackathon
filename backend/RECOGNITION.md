@@ -1,8 +1,9 @@
 # Optional Gemini recognition
 
-This backend-only update adds Gemini semantic proposals, ink-verified ball/block
+The backend adds Gemini semantic proposals, ink-verified ball/block
 geometry and handwritten parameter extraction to the existing OpenCV pipeline.
-It preserves the existing single-ball simulation API and all frontend files.
+It preserves the existing single-ball simulation API. The frontend exposes the
+mode selector and recognition metadata in a dedicated `RecognitionDetails` component.
 It does not add collision dynamics or automatically simulate detected blocks.
 
 ## Setup
@@ -29,7 +30,8 @@ The Google SDK is optional: OpenCV-only installations do not import it.
 
 ## Frontend handoff
 
-The existing upload request remains unchanged and defaults to local OpenCV.
+The API upload request defaults to local OpenCV. The UI checkbox is enabled by
+default and sends `vision_mode=hybrid` when checked, with an explicit cloud/cost notice.
 To opt into Gemini, append one multipart form field:
 
 ```typescript
@@ -88,6 +90,13 @@ separate readings targeting the corresponding block and ball, not a global mass.
 - `applied` describes the default label handoff, not a guarantee of OCR correctness
   or the effective value after a user override. Inspect the run's parameter sources.
 
+A proposal covering multiple possible circles is left unassigned. When multiple
+semantic proposals resolve to the same confirmed body, all those associations are
+invalidated before binding parameters. This avoids assigning two masses to one
+ball even when their numeric values happen to agree. Verified OpenCV geometry is
+retained for inspection. Block and ellipse fitting also require a unique shape
+within each proposal region rather than picking the largest candidate silently.
+
 The overlay draws verified circles/quadrilaterals and labels unverified semantic
 boxes as proposals. An unsupported proposal cannot create physics geometry on
 blank paper. A missing ramp can be recovered only when both ramp and ground
@@ -105,3 +114,15 @@ python -m pytest -q
 The suite mocks the Gemini boundary: no credentials, paid requests, dataset
 changes, retraining or held-out synthetic test data are needed. The existing CV
 fixtures are regression checks, not a complete real-photo detection benchmark.
+
+## Diagnostic reports and automated checks
+
+Run `python scripts/inspect_recognition.py` from the repository root for local
+fixture reports. `--mode both --allow-cloud` explicitly enables optional Gemini
+comparison and may incur API charges. Output is restricted to ignored
+`data/generated/`; labels, datasets and splits are never changed. Reports contain
+counts, timings, status and parameter metadata, not quantitative accuracy claims.
+
+Use `make setup-vision VENV=backend/.venv` when reusing a backend-local environment,
+or omit `VENV` for the standard root `.venv`. CI uses Python 3.12 and Node 22 and
+runs mocked cloud-boundary tests without credentials or paid requests.
