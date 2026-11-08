@@ -57,6 +57,14 @@ def test_labels_and_override():
     assert scene.ramp_length_m == pytest.approx(400 / 800)
 
 
+def test_start_fraction_moves_the_ball():
+    scene = build_scene(rec(30), ParamsOverride(start_fraction=0.5)).scene
+    assert scene.ramp_length_m == pytest.approx(0.5 * 500 / 800)
+    assert "start_fraction" not in scene.params.sources
+    # never right at the bottom
+    assert build_scene(rec(30), ParamsOverride(start_fraction=0)).scene.ramp_length_m > 0
+
+
 def test_clamp_and_no_ball():
     result = build_scene(rec(80, ball=False))
     assert result.scene.params.angle_deg == 75

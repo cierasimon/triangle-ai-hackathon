@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from app import store
 from app.contracts import ParamsOverride, Run, RunRequest
 from app.physics import formulas
-from app.physics.simulate import simulate
+from app.physics.simulate import simulate, simulate_collisions
 from app.scene.builder import SceneError, build_scene
 
 router = APIRouter()
@@ -22,6 +22,7 @@ def make_run(session: store.Session, image_id: str, override: ParamsOverride | N
     built = build_scene(stored.recognition, override)
     scene = built.scene
     sim = simulate(scene)
+    motion = simulate_collisions(scene)  # the animation: down the ramp and along the ground
     run_id, index = session.next_run_id()
     changed = {}
     motion_changed = False
@@ -34,9 +35,10 @@ def make_run(session: store.Session, image_id: str, override: ParamsOverride | N
         run_id=run_id,
         index=index,
         scene=scene,
-        frames=sim.frames,
+        frames=motion.frames,
         verification=formulas.verify(scene, sim.time_to_bottom, sim.final_speed),
         changed=changed,
+        collision=motion.collision,
     )
     session.runs.append(run)
     profile = session.profile

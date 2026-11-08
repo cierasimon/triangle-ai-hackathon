@@ -1,9 +1,10 @@
 """Shareable animation of a run, rendered server-side with Pillow (P4.1, P4.2).
 
-Layout (960 × 450): the photo with recognized outlines on the left, the simulation on the
-right, and a card strip below: "PaperPhysics · Run N", predicted vs simulated, the formula.
-The motion plays in real time, holds on the final frame, and repeats to fill a ~6 s loop
-(5–8 s). Frames share one palette, so the static photo costs almost nothing after frame 1.
+Layout (960 × 480), in the app's dark theme: the simulation as the web player draws it
+(ground up to its stop, ramp, θ, balls and blocks with their weight and velocity arrows) and
+a card strip below: "PaperPhysics · latest run", the time and speed at the bottom, the setup and
+any collision. The motion plays at the web player's slow-motion speed, after the same short pause, and is
+cut at MAX_GIF_S rather than sped up; it holds on the final frame, then loops.
 Fallback: a still PNG of the final frame with the same card.
 """
 
@@ -16,21 +17,28 @@ from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont
 
-from app.contracts import Run
+from app.contracts import Frame, Run, Shape
+from app.physics.simulate import ground_end
 
-W, PANEL_H, CARD_H = 960, 360, 90
+W, PANEL_H, CARD_H = 960, 390, 90
 H = PANEL_H + CARD_H
-PANEL_W = W // 2
 GIF_FPS = 20
-LOOP_TARGET_S = 6.0
-LOOP_MIN_S, LOOP_MAX_S = 5.0, 8.0
+PLAYBACK_SPEED = 0.12  # physics s per real s: the web player's slow motion (usePlayback.ts)
+START_HOLD_S = 0.7  # pause before the motion starts, as in the web player
 HOLD_S = 0.8  # pause on the final frame before repeating
+MAX_GIF_S = 15.0  # longer runs are cut here (not sped up)
+STILL_S = 6.0  # a run where nothing moves: one frame for this long
 MAX_BYTES = 5 * 1024 * 1024
 
-BG = (250, 250, 247)
-INK = (26, 26, 26)
-MUTED = (107, 107, 107)
-RAMP, GROUND, BALL = (220, 38, 38), (37, 99, 235), (22, 163, 74)
+MIN_BODY_PX = 6
+
+# the web app's dark, colorless theme (frontend/src/styles.css)
+BG = (11, 11, 12)
+CARD = (20, 20, 21)
+BORDER = (42, 42, 45)
+INK = (236, 236, 236)
+MUTED = (140, 140, 140)
+MAIN_FILL, OTHER_FILL = (189, 189, 189), (111, 111, 111)
 
 FONT_CANDIDATES = [
     "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
@@ -41,9 +49,8 @@ FONT_CANDIDATES = [
     "/System/Library/Fonts/SFNS.ttf",
     "C:/Windows/Fonts/arial.ttf",
 ]
-UNICODE_SAMPLE = "θ√μ²→·°×"
-ASCII = {"θ": "theta", "√": "sqrt", "μ": "mu", "²": "^2", "→": "->", "·": "-", "°": " deg",
-         "×": "x", "−": "-"}
+UNICODE_SAMPLE = "θμ→·°₁₂"
+ASCII = {"θ": "theta", "μ": "mu", "→": "->", "·": "-", "°": " deg", "₁": "1", "₂": "2"}
 
 
 @dataclass
@@ -91,41 +98,38 @@ def _text(draw: ImageDraw.ImageDraw, xy, text: str, size: int, fill=INK) -> None
 
 # ---- card (P4.2) ------------------------------------------------------------------------
 
-FORMULA_TEXT = {
-    "slide": "t = √(2L / a),  a = g(sin θ − μ cos θ)",
-    "roll": "t = √(2L / a),  a = 5/7 · g sin θ",
-}
-
 
 def card_lines(run: Run) -> tuple[str, str, str]:
-    v, p = run.verification, run.scene.params
-    head = f"PaperPhysics · Run {run.index}"
+    v, s = run.verification, run.scene
+    p = s.params
+    head = "PaperPhysics · latest run"
     if v.predicted_time_s is None:
-        numbers = "the ball does not move: μ ≥ tan θ"
-    elif v.simulated_time_s is None:
-        numbers = f"predicted {v.predicted_time_s:.2f} s · simulation stopped at 10 s"
+        numbers = "it does not move: μ ≥ tan θ"
     else:
-        numbers = (f"predicted {v.predicted_time_s:.2f} s · simulated {v.simulated_time_s:.2f} s"
-                   f" · error {v.error_pct:.1f}%")
-    setup = (f"{FORMULA_TEXT[p.motion]}   ·   θ = {p.angle_deg:.0f}°, g = {p.gravity:g} m/s², "
-             f"μ = {p.friction:g}, m = {p.mass_kg:g} kg")
+        t = v.simulated_time_s if v.simulated_time_s is not None else v.predicted_time_s
+        speed = v.simulated_speed_m_s if v.simulated_speed_m_s is not None else v.predicted_speed_m_s
+        numbers = f"time to bottom {t:.2f} s · speed at bottom {speed:.2f} m/s"
+    length = math.dist(s.ramp_top_m, s.ramp_bottom_m)
+    masses = (f"m₁ = {p.mass_kg:g} kg, m₂ = {s.others[0].mass_kg:g} kg" if s.others
+              else f"m = {p.mass_kg:g} kg")
+    setup = f"θ = {p.angle_deg:.0f}°, L = {length:.2f} m, {masses}"
+    c = run.collision
+    if c:
+        setup += (f"   ·   hit at {c.t:.2f} s: 1: {c.v1_before:.2f} → {c.v1_after:.2f} m/s,"
+                  f" 2: {c.v2_before:.2f} → {c.v2_after:.2f} m/s")
     return head, numbers, setup
 
 
-def _base(run: Run, photo: Image.Image | None) -> Image.Image:
-    """Everything that doesn't move: photo panel, card strip, divider."""
+def _base(run: Run) -> Image.Image:
+    """Everything that doesn't change: background and the card strip."""
     img = Image.new("RGB", (W, H), BG)
-    if photo is not None:
-        p = photo.convert("RGB")
-        p.thumbnail((PANEL_W - 16, PANEL_H - 16), Image.LANCZOS)
-        img.paste(p, ((PANEL_W - p.width) // 2, (PANEL_H - p.height) // 2))
     draw = ImageDraw.Draw(img)
-    draw.line([(PANEL_W, 12), (PANEL_W, PANEL_H - 12)], fill=(227, 227, 221), width=1)
-    draw.rectangle([0, PANEL_H, W, H], fill=(255, 255, 255))
+    draw.rectangle([0, PANEL_H, W, H], fill=CARD)
+    draw.line([(0, PANEL_H), (W, PANEL_H)], fill=BORDER, width=1)
     head, numbers, setup = card_lines(run)
-    _text(draw, (16, PANEL_H + 10), head, 20)
-    _text(draw, (16, PANEL_H + 38), numbers, 17, fill=INK if run.verification.ok else RAMP)
-    _text(draw, (16, PANEL_H + 63), setup, 14, fill=MUTED)
+    _text(draw, (20, PANEL_H + 10), head, 20)
+    _text(draw, (20, PANEL_H + 38), numbers, 17)
+    _text(draw, (20, PANEL_H + 63), setup, 14, fill=MUTED)
     return img
 
 
@@ -138,12 +142,14 @@ class _View:
     def __init__(self, run: Run):
         s = run.scene
         (tx, ty), (bx, by) = s.ramp_top_m, s.ramp_bottom_m
-        pad = 0.12 * math.dist((tx, ty), (bx, by)) + 2 * s.ball_radius_m
-        self.min_x, self.max_x = min(tx, bx) - pad, max(tx, bx) + pad
+        biggest = max([s.ball_radius_m, *(o.radius_m for o in s.others)])
+        pad = 0.08 * math.dist((tx, ty), (bx, by)) + 2 * biggest
+        xs = [tx, bx, *(o.center_m[0] for o in s.others), ground_end(s)]  # every body stays in view
+        self.min_x, self.max_x = min(xs) - pad, max(xs) + pad
         self.min_y, self.max_y = min(s.ground_y_m, by) - pad, max(ty, by) + pad
-        self.scale = min((PANEL_W - 24) / (self.max_x - self.min_x),
-                         (PANEL_H - 24) / (self.max_y - self.min_y))
-        self.ox = PANEL_W + (PANEL_W - (self.max_x - self.min_x) * self.scale) / 2
+        self.scale = min((W - 40) / (self.max_x - self.min_x),
+                         (PANEL_H - 40) / (self.max_y - self.min_y))
+        self.ox = (W - (self.max_x - self.min_x) * self.scale) / 2
         self.oy = (PANEL_H - (self.max_y - self.min_y) * self.scale) / 2
 
     def __call__(self, x: float, y: float) -> tuple[float, float]:
@@ -151,34 +157,118 @@ class _View:
                 PANEL_H - self.oy - (y - self.min_y) * self.scale)
 
 
+def _arrow(draw: ImageDraw.ImageDraw, x0: float, y0: float, x1: float, y1: float) -> None:
+    length = math.hypot(x1 - x0, y1 - y0)
+    if length < 3:
+        return
+    a = math.atan2(y1 - y0, x1 - x0)
+    head = min(10.0, 0.4 * length)
+    draw.line([(x0, y0), (x1, y1)], fill=INK, width=2)
+    draw.polygon([(x1, y1), (x1 - head * math.cos(a - 0.45), y1 - head * math.sin(a - 0.45)),
+                  (x1 - head * math.cos(a + 0.45), y1 - head * math.sin(a + 0.45))], fill=INK)
+
+
 def _draw_scene(img: Image.Image, run: Run, view: _View) -> None:
     draw = ImageDraw.Draw(img)
     s = run.scene
-    draw.line([view(view.min_x, s.ground_y_m), view(view.max_x, s.ground_y_m)], fill=GROUND, width=4)
-    draw.line([view(*s.ramp_bottom_m), view(*s.ramp_top_m)], fill=RAMP, width=4)
+    (bx, by), (tx, ty) = s.ramp_bottom_m, s.ramp_top_m
+    end = ground_end(s)
+    far = view.max_x if tx > bx else view.min_x  # the ground behind the ramp runs off the panel
+    gy = view(0, s.ground_y_m)[1]
+    draw.line([(view(far, 0)[0], gy), (view(end, 0)[0], gy)], fill=MUTED, width=2)
+    wall = 22.0
+    draw.line([(view(end, 0)[0], gy), (view(end, 0)[0], gy - wall)], fill=INK, width=4)
+    draw.line([view(bx, by), view(tx, ty)], fill=INK, width=3)
+    # θ arc at the foot of the ramp, label under the ground
+    cx, cy = view(bx, by)
+    r = min(48.0, 0.22 * math.dist((tx, ty), (bx, by)) * view.scale)
+    a = s.params.angle_deg
+    start, stop = (360 - a, 360) if tx > bx else (180, 180 + a)
+    draw.arc([cx - r, cy - r, cx + r, cy + r], start, stop, fill=MUTED, width=2)
+    side = 1 if tx > bx else -1
+    label = f"θ = {a:.0f}°"
+    font, _ = _font(14)
+    width = draw.textlength(label, font=font)
+    _text(draw, (cx + side * (r + 6) - (width if side < 0 else 0), cy + 6), label, 14)
 
 
-def _draw_ball(img: Image.Image, run: Run, view: _View, x: float, y: float, spin: float) -> None:
-    draw = ImageDraw.Draw(img)
+def _pos(f: Frame, which: int) -> tuple[float, float]:
+    return (f.x, f.y) if which < 0 else tuple(f.others[which][:2])
+
+
+def _frame_at(frames: list[Frame], t: float) -> tuple[Frame, float, int]:
+    """(frame interpolated at t, blend factor k, index j of the frame after t)."""
+    j = next((i for i, f in enumerate(frames) if f.t >= t), len(frames) - 1)
+    if j == 0:
+        return frames[0], 0.0, 1
+    a, b = frames[j - 1], frames[j]
+    k = min(1.0, max(0.0, (t - a.t) / ((b.t - a.t) or 1)))
+    mix = lambda p, q: p + (q - p) * k  # noqa: E731
+    others = [tuple(mix(p, q) for p, q in zip(oa, ob)) for oa, ob in zip(a.others, b.others)]
+    return Frame(t=t, x=mix(a.x, b.x), y=mix(a.y, b.y), angle=mix(a.angle, b.angle),
+                 others=others), k, j
+
+
+def _velocity_at_frame(frames: list[Frame], i: int, which: int) -> tuple[float, float]:
+    a, b = frames[max(0, i - 1)], frames[min(len(frames) - 1, i + 1)]
+    dt = b.t - a.t
+    if dt <= 0:
+        return 0.0, 0.0
+    (xa, ya), (xb, yb) = _pos(a, which), _pos(b, which)
+    return (xb - xa) / dt, (yb - ya) / dt
+
+
+def _velocity(frames: list[Frame], j: int, k: float, which: int) -> tuple[float, float]:
+    """Velocity (m/s) between frames j-1 and j, blended like the position (smooth arrows)."""
+    va, vb = _velocity_at_frame(frames, j - 1, which), _velocity_at_frame(frames, j, which)
+    return va[0] + (vb[0] - va[0]) * k, va[1] + (vb[1] - va[1]) * k
+
+
+def _draw_body(draw: ImageDraw.ImageDraw, view: _View, x: float, y: float, spin: float,
+               radius_m: float, shape: Shape, fill) -> tuple[float, float, float]:
+    """Draw one ball or block; returns its centre and size in pixels."""
+    real = radius_m * view.scale
+    r = max(real, MIN_BODY_PX)
     cx, cy = view(x, y)
-    r = max(3.0, run.scene.ball_radius_m * view.scale)
-    draw.ellipse([cx - r, cy - r, cx + r, cy + r], fill=BALL)
-    draw.line([(cx, cy), (cx + r * math.cos(-spin), cy + r * math.sin(-spin))],
-              fill=(255, 255, 255), width=2)
+    cy -= r - real  # drawn bigger than real: lift it so it still sits on the surface
+    if shape == "block":
+        corners = [(-r, -r), (r, -r), (r, r), (-r, r)]
+        c, s = math.cos(-spin), math.sin(-spin)
+        draw.polygon([(cx + u * c - v * s, cy + u * s + v * c) for u, v in corners], fill=fill)
+    else:
+        draw.ellipse([cx - r, cy - r, cx + r, cy + r], fill=fill)
+    return cx, cy, r
 
 
-def _frame_at(run: Run, t: float):
-    frames = run.frames
-    for f in frames:
-        if f.t >= t:
-            return f
-    return frames[-1]
+def _draw_bodies(img: Image.Image, run: Run, view: _View, t: float) -> None:
+    """Every body as it is at time t, with its weight and (while moving) velocity arrows."""
+    draw = ImageDraw.Draw(img)
+    s = run.scene
+    f, k, j = _frame_at(run.frames, t)
+    unit = math.dist(s.ramp_top_m, s.ramp_bottom_m) * view.scale
+    c = run.collision
+    v_max = max(run.verification.simulated_speed_m_s or run.verification.predicted_speed_m_s or 0,
+                c.v1_before if c else 0, c.v2_after if c else 0)
+    moving = 0 < t < run.frames[-1].t
+    bodies = [(f.x, f.y, f.angle, s.ball_radius_m, s.ball_shape, s.params.mass_kg, MAIN_FILL, -1)]
+    bodies += [(x, y, a, o.radius_m, o.shape, o.mass_kg, OTHER_FILL, k)
+               for k, ((x, y, a), o) in enumerate(zip(f.others, s.others))]
+    for x, y, spin, radius, shape, mass, fill, which in bodies:
+        cx, cy, _ = _draw_body(draw, view, x, y, spin, radius, shape, fill)
+        w_len = min(unit * (0.08 + 0.017 * mass), PANEL_H - cy - 12)
+        _arrow(draw, cx, cy, cx, cy + w_len)
+        vx, vy = _velocity(run.frames, j, k, which) if moving else (0.0, 0.0)
+        speed = math.hypot(vx, vy)
+        if speed > 1e-3 and v_max:
+            length = unit * 0.4 * min(1.0, speed / v_max)
+            _arrow(draw, cx, cy, cx + vx / speed * length, cy - vy / speed * length)
 
 
-def render(run: Run, photo: Image.Image | None) -> Rendered:
-    """GIF of the run; a still PNG if the GIF fails or is too big."""
+def render(run: Run, photo: Image.Image | None = None) -> Rendered:
+    """GIF of the run; a still PNG if the GIF fails or is too big. (`photo` is unused: the
+    export shows the simulation only, as the app does.)"""
     start = time.perf_counter()
-    base = _base(run, photo)
+    base = _base(run)
     view = _View(run)
     _draw_scene(base, run, view)
     try:
@@ -192,8 +282,7 @@ def render(run: Run, photo: Image.Image | None) -> Rendered:
 
 def still_png(run: Run, base: Image.Image, view: _View) -> bytes:
     img = base.copy()
-    last = run.frames[-1]
-    _draw_ball(img, run, view, last.x, last.y, last.angle)
+    _draw_bodies(img, run, view, run.frames[-1].t)
     buf = io.BytesIO()
     img.save(buf, format="PNG", optimize=True)
     return buf.getvalue()
@@ -202,31 +291,22 @@ def still_png(run: Run, base: Image.Image, view: _View) -> bytes:
 def _gif(run: Run, base: Image.Image, view: _View) -> tuple[bytes, float]:
     motion = run.frames[-1].t if run.frames else 0.0
     if motion <= 0 or run.verification.predicted_time_s is None:
-        # the ball doesn't move: one still frame shown for the whole loop
+        # nothing moves: one still frame
         img = base.copy()
-        f = run.frames[0]
-        _draw_ball(img, run, view, f.x, f.y, f.angle)
-        return _encode([img], [int(LOOP_TARGET_S * 1000)]), LOOP_TARGET_S
+        _draw_bodies(img, run, view, 0.0)
+        return _encode([img], [int(STILL_S * 1000)]), STILL_S
 
-    # play faster than real time only if one pass wouldn't fit in the loop
-    speed = max(1.0, (motion + HOLD_S) / (LOOP_MAX_S - 0.5))
-    pass_s = motion / speed + HOLD_S
-    repeats = max(1, round(LOOP_TARGET_S / pass_s))
-    while repeats * pass_s < LOOP_MIN_S:
-        repeats += 1
-    while repeats > 1 and repeats * pass_s > LOOP_MAX_S:
-        repeats -= 1
-
-    n = max(2, math.ceil(motion / speed * GIF_FPS))
+    # the app's slow motion, after its pause; a long run is cut at MAX_GIF_S, not sped up
+    shown = min(motion, (MAX_GIF_S - START_HOLD_S - HOLD_S) * PLAYBACK_SPEED)
+    n = max(2, math.ceil(shown / PLAYBACK_SPEED * GIF_FPS))
     images, durations = [], []
     for i in range(n + 1):
-        f = _frame_at(run, min(i / GIF_FPS * speed, motion))
         img = base.copy()
-        _draw_ball(img, run, view, f.x, f.y, f.angle)
+        _draw_bodies(img, run, view, min(i / GIF_FPS * PLAYBACK_SPEED, shown))
         images.append(img)
         durations.append(int(1000 / GIF_FPS))
+    durations[0] += int(START_HOLD_S * 1000)
     durations[-1] = int(HOLD_S * 1000)
-    images, durations = images * repeats, durations * repeats
     return _encode(images, durations), sum(durations) / 1000
 
 

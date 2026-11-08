@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "paperphysics",
+      "runtimeExecutable": "/Users/agastyavinchhi/Desktop/triangle-ai-hackathon/.venv/bin/uvicorn",
+      "runtimeArgs": ["app.main:app", "--app-dir", "/Users/agastyavinchhi/Desktop/triangle-ai-hackathon/backend", "--host", "127.0.0.1", "--port", "8000"],
+      "port": 8000
+    }
+  ]
+}

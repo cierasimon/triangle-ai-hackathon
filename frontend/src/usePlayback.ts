@@ -1,6 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
-/** A clock from 0 to `length` seconds; restarts whenever `key` changes. */
+/** Real seconds of physics per second of wall clock: the ball moves in slow motion. */
+export const PLAYBACK_SPEED = 0.12;
+/** Wall-clock pause before the ball starts, so the setup can be read first. */
+const HOLD_MS = 700;
+
+/** A clock from 0 to `length` seconds (slowed down); restarts whenever `key` changes. */
 export function usePlayback(length: number, key: string) {
   const [t, setT] = useState(0);
   const [playing, setPlaying] = useState(true);
@@ -15,9 +20,10 @@ export function usePlayback(length: number, key: string) {
   useEffect(() => {
     if (!playing) return;
     let raf = 0;
-    const start = performance.now() - tRef.current * 1000;
+    const hold = tRef.current === 0 ? HOLD_MS : 0;
+    const start = performance.now() + hold - (tRef.current * 1000) / PLAYBACK_SPEED;
     const tick = (now: number) => {
-      const next = Math.min((now - start) / 1000, length);
+      const next = Math.min(Math.max(0, ((now - start) / 1000) * PLAYBACK_SPEED), length);
       tRef.current = next;
       setT(next);
       if (next < length) raf = requestAnimationFrame(tick);

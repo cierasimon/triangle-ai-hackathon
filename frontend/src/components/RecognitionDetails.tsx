@@ -25,7 +25,7 @@ export function RecognitionDetails({ recognition: rec }: { recognition: Recognit
     {!rec.ball && <p className="muted">No primary ball geometry was confirmed. Review the overlay or upload another photo;
       a simulated ball will not be invented for this image.</p>}
     {(rec.balls.length > 1 || rec.blocks.length > 0) && <p className="muted">
-      All confirmed objects are shown in the photo overlay. The current simulation uses only the primary ball;
-      other balls and blocks do not participate in collisions yet.</p>}
+      All confirmed objects are shown in the photo overlay. The simulation starts the object nearest the
+      ramp top; other balls and blocks resting on the ramp or the ground are hit by it.</p>}
   </div>;
 }

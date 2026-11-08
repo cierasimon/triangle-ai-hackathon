@@ -12,6 +12,7 @@ from pydantic import BaseModel, Field
 
 Point = tuple[float, float]
 Motion = Literal["slide", "roll"]
+Shape = Literal["ball", "block"]  # a drawn circle, or a drawn square (always slides)
 Level = Literal["beginner", "intermediate", "confident"]
 ParamSource = Literal["drawing", "label", "default", "user"]
 
@@ -27,9 +28,12 @@ class Line(BaseModel):
 
 
 class Ball(BaseModel):
+    """A drawn body: a circle, or a square block (radius = half its side)."""
+
     center: Point
     radius: float
     confidence: float
+    shape: Shape = "ball"
     sprite_png_b64: str | None = None
 
 
@@ -84,6 +88,7 @@ class Recognition(BaseModel):
     gemini_status: Literal["disabled", "success", "failed", "unavailable"] = "disabled"
     gemini_model: str | None = None
     gemini_summary: str | None = None
+    other_balls: list[Ball] = []  # more balls on the ramp or the ground, hit by the main one
     labels: list[Label] = []
     warnings: list[str] = []
 
@@ -98,14 +103,28 @@ class Params(BaseModel):
     sources: dict[str, ParamSource] = {}
 
 
+class OtherBall(BaseModel):
+    """A ball at rest that the main ball can hit."""
+
+    surface: Literal["ramp", "ground"]
+    at: float  # ramp: fraction of the ramp from the bottom (0) to the top (1); ground: x (m)
+    shape: Shape = "ball"
+    radius_m: float  # half the side for a block
+    mass_kg: float
+    center_m: Point  # resting position for this scene's ramp
+
+
 class Scene(BaseModel):
     scale_m_per_px: float  # paper short side = 1 m
     ramp_top_m: Point
     ramp_bottom_m: Point
     ground_y_m: float
-    ball_radius_m: float
+    ball_radius_m: float  # half the side for a block
+    ball_shape: Shape = "ball"
     ramp_length_m: float  # distance the ball travels along the ramp
     params: Params
+    others: list[OtherBall] = []
+    ground_end_x_m: float | None = None  # the flat ground ends here, with a stop the balls halt at
 
 
 class Frame(BaseModel):
@@ -113,6 +132,18 @@ class Frame(BaseModel):
     x: float
     y: float
     angle: float
+    others: list[tuple[float, float, float]] = []  # (x, y, angle) per Scene.others
+
+
+class Collision(BaseModel):
+    """The first hit between the main ball and another ball, from the simulation."""
+
+    t: float
+    other: int  # index into Scene.others
+    v1_before: float  # speeds (m/s)
+    v1_after: float
+    v2_before: float
+    v2_after: float
 
 
 class Verification(BaseModel):
@@ -130,9 +161,10 @@ class Run(BaseModel):
     run_id: str  # "r1", "r2", ...
     index: int  # 1-based, shown as "Run N"
     scene: Scene
-    frames: list[Frame]  # ~60 fps, until bottom or 10 s
+    frames: list[Frame]  # ~60 fps: down the ramp and along the ground, until everything stops
     verification: Verification
     changed: dict[str, tuple[float, float]] = {}  # param -> (old, new) vs previous run
+    collision: Collision | None = None
 
 
 EventKind = Literal["upload", "run", "change", "drag_rerun", "question", "answer", "quiz", "export"]
@@ -164,6 +196,11 @@ class ParamsOverride(BaseModel):
     gravity: float | None = None
     friction: float | None = None
     motion: Motion | None = None
+    start_fraction: float | None = None  # ball start along the ramp: 0 = bottom, 1 = top
+    ramp_full_m: float | None = None  # whole ramp length; the ball keeps its place on it
+    other_mass_kg: float | None = None  # mass of every other ball
+    other_surface: Literal["ramp", "ground"] | None = None  # the learner dragged the 2nd object:
+    other_at: float | None = None  # ...to here (as OtherBall.at); both or neither
 
 
 class RunRequest(BaseModel):
@@ -257,6 +294,13 @@ class QuizResult(BaseModel):
     guess: float
     error_pct: float
     run: Run | None
+
+
+class ExportRequest(BaseModel):
+    """The run as the page shows it, so export works even after the server forgot it
+    (sessions live in memory: a restart or a dev reload clears them)."""
+
+    run: Run | None = None
 
 
 class ExportResponse(BaseModel):

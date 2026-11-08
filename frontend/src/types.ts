@@ -14,11 +14,15 @@ export interface Line {
   confidence: number;
 }
 
+export type Shape = "ball" | "block"; // a drawn circle, or a drawn square (always slides)
+
+/** A drawn body: a circle, or a square block (radius = half its side). */
 export interface Ball {
   center: Point;
   radius: number;
   confidence: number;
   sprite_png_b64: string | null;
+  shape: Shape;
 }
 
 export interface Label {
@@ -59,6 +63,7 @@ export interface Recognition {
   gemini_status: "disabled" | "success" | "failed" | "unavailable";
   gemini_model: string | null;
   gemini_summary: string | null;
+  other_balls: Ball[]; // more balls on the ramp or the ground, hit by the main one
   labels: Label[];
   warnings: string[];
 }
@@ -73,14 +78,27 @@ export interface Params {
   sources: Record<string, ParamSource>;
 }
 
+/** A ball at rest that the main ball can hit. */
+export interface OtherBall {
+  surface: "ramp" | "ground";
+  at: number; // ramp: fraction of the ramp from the bottom (0) to the top (1); ground: x (m)
+  shape: Shape;
+  radius_m: number; // half the side for a block
+  mass_kg: number;
+  center_m: Point; // resting position for this scene's ramp
+}
+
 export interface Scene {
   scale_m_per_px: number;
   ramp_top_m: Point;
   ramp_bottom_m: Point;
   ground_y_m: number;
-  ball_radius_m: number;
+  ball_radius_m: number; // half the side for a block
+  ball_shape: Shape;
   ramp_length_m: number;
   params: Params;
+  others: OtherBall[];
+  ground_end_x_m: number | null; // the flat ground ends here, with a stop the balls halt at
 }
 
 export interface Frame {
@@ -88,6 +106,17 @@ export interface Frame {
   x: number;
   y: number;
   angle: number;
+  others: [number, number, number][]; // (x, y, angle) per Scene.others
+}
+
+/** The first hit between the main ball and another ball, from the simulation. */
+export interface Collision {
+  t: number;
+  other: number; // index into Scene.others
+  v1_before: number; // speeds (m/s)
+  v1_after: number;
+  v2_before: number;
+  v2_after: number;
 }
 
 export interface Verification {
@@ -108,6 +137,7 @@ export interface Run {
   frames: Frame[];
   verification: Verification;
   changed: Record<string, [number, number]>;
+  collision: Collision | null;
 }
 
 export type EventKind =
@@ -132,7 +162,13 @@ export interface CornersRequest {
   corners: Point[];
 }
 
-export type ParamsOverride = Partial<Pick<Params, "angle_deg" | "mass_kg" | "gravity" | "friction" | "motion">>;
+export type ParamsOverride = Partial<Pick<Params, "angle_deg" | "mass_kg" | "gravity" | "friction" | "motion">> & {
+  start_fraction?: number; // ball start along the ramp: 0 = bottom, 1 = top
+  ramp_full_m?: number; // whole ramp length; the ball keeps its place on it
+  other_mass_kg?: number; // mass of every other ball
+  other_surface?: "ramp" | "ground"; // the learner dragged the 2nd object:
+  other_at?: number; // ...to here (as OtherBall.at); both or neither
+};
 
 export interface RunRequest {
   image_id: string;
@@ -217,6 +253,11 @@ export interface QuizResult {
   guess: number;
   error_pct: number;
   run: Run | null;
+}
+
+/** The run as the page shows it, so export works even after the server forgot it. */
+export interface ExportRequest {
+  run?: Run | null;
 }
 
 export interface ExportResponse {

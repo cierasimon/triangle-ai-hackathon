@@ -1,6 +1,6 @@
 // Thin typed client for the backend. The session lives in a cookie set by the backend.
 import type {
-  AskRequest, AskResponse, CornersRequest, ExportResponse, FollowUp, Level, PredictResponse,
+  AskRequest, AskResponse, CornersRequest, ExportRequest, ExportResponse, FollowUp, Level, PredictResponse,
   QuizPrompt, QuizResult, Recognition, Run, RunRequest, SessionState, SummaryResponse,
   UploadResponse, WhyCard, WhyCardRequest, VisionMode,
 } from "./types";
@@ -47,5 +47,5 @@ export const api = {
   followups: () => call<FollowUp[]>("/ta/followups"),
   quiz: () => post<QuizPrompt>("/ta/quiz"),
   quizAnswer: (quiz_id: string, guess: number) => post<QuizResult>("/ta/quiz/answer", { quiz_id, guess }),
-  exportRun: (runId: string) => post<ExportResponse>(`/export/${runId}`),
+  exportRun: (run: Run) => post<ExportResponse>(`/export/${run.run_id}`, { run } satisfies ExportRequest),
 };

@@ -149,8 +149,11 @@ def explain_recognition(session: store.Session) -> str:
         lines.append(f"- a ramp at {first.scene.params.angle_deg:.1f}° with a ground line")
     elif not has_ramp:
         lines.append("- no ramp: I need one straight slanted line meeting a flat ground line")
-    lines.append("- a ball on the ramp" if rec.ball else
+    names = {"ball": "ball", "block": "block (a square: it slides)"}
+    lines.append(f"- a {names[rec.ball.shape]} on the ramp" if rec.ball else
                  "- no ball, so I started one near the top of the ramp")
+    for other in rec.other_balls:
+        lines.append(f"- another {other.shape} for it to hit")
     if first:
         assumed = [k for k in first.scene.params.defaults_used if k != "ball"]
         if assumed:
@@ -164,9 +167,9 @@ def explain_recognition(session: store.Session) -> str:
     if rec.warnings or not rec.ball or not has_ramp:
         lines.append("**To redraw:** thick dark marker on plain paper, whole sheet in the "
                      "photo, one straight ramp touching a flat ground line, and one circle "
-                     "resting on the ramp.")
+                     "(or square) resting on the ramp.")
     lines.append("Written numbers such as angles or masses aren't read yet; change them with "
-                 "the buttons.")
+                 "the sliders.")
     return "\n".join(lines)
 
 

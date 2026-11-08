@@ -11,7 +11,9 @@
 4. The chosen rotation (plus a small deskew so the ground is exactly horizontal) is applied
    to the image, so Recognition coordinates are in the upright, flattened image.
 5. Ball: the candidate closest to the ramp top among those resting on (or floating just
-   above) the ramp; blocks, arcs, arrows and handwriting are ignored.
+   above) the ramp; arcs, arrows and handwriting are ignored. Drawn squares (blocks) come
+   from the Gemini hybrid path (cv/hybrid.py, cv/blocks.py), which calls assign_bodies. Every other ball
+   resting on the ramp or on the ground is kept as an "other ball" for the main one to hit.
 """
 
 import io
@@ -61,9 +63,12 @@ class Seg:
 
 @dataclass
 class Circle:
+    """A body candidate: a drawn circle, or a square block (radius = half its side)."""
+
     center: np.ndarray
     radius: float
-    score: float  # roundness quality 0..1
+    score: float  # shape quality 0..1
+    shape: str = "ball"
 
 
 @dataclass
@@ -329,7 +334,7 @@ def best_pair(segs: list[Seg], circles: list[Circle], size: tuple[int, int], k: 
               short: float) -> Pair | None:
     rs = [Seg(rotate_point(s.p1, k, size), rotate_point(s.p2, k, size), s.coverage)
           for s in segs]
-    rc = [Circle(rotate_point(c.center, k, size), c.radius, c.score) for c in circles]
+    rc = [Circle(rotate_point(c.center, k, size), c.radius, c.score, c.shape) for c in circles]
     grounds = [s for s in rs if s.tilt() <= GROUND_MAX_TILT and s.length >= MIN_GROUND_LEN * short]
     ramps = [s for s in rs if RAMP_MIN_ANGLE <= s.tilt() <= RAMP_MAX_ANGLE
              and s.length >= MIN_RAMP_LEN * short]
@@ -401,11 +406,12 @@ def recognize(cap: Capture, image_id: str) -> Result:
     up_mask = np.ascontiguousarray(np.rot90(mask, k))
     rot = lambda p: rotate_point(p, k, (w, h))  # noqa: E731
     up_w, up_h = _rotated_size((w, h), k)
-    up_circles = [Circle(rot(c.center), c.radius, c.score) for c in circles]
+    up_circles = [Circle(rot(c.center), c.radius, c.score, c.shape) for c in circles]
 
     lines: list[Line] = []
     ball = None
     balls = []
+    others: list[Ball] = []
     if pair is None:
         warnings.append("no ramp found — draw one straight slanted line meeting a flat ground line")
     else:
@@ -421,7 +427,7 @@ def recognize(cap: Capture, image_id: str) -> Result:
             fix = lambda p: matrix[:, :2] @ p + matrix[:, 2]  # noqa: E731
             ramp = Seg(fix(ramp.p1), fix(ramp.p2), ramp.coverage)
             ground = Seg(fix(ground.p1), fix(ground.p2), ground.coverage)
-            up_circles = [Circle(fix(c.center), c.radius, c.score) for c in up_circles]
+            up_circles = [Circle(fix(c.center), c.radius, c.score, c.shape) for c in up_circles]
 
         low, high = (ramp.p1, ramp.p2) if ramp.p1[1] > ramp.p2[1] else (ramp.p2, ramp.p1)
         corner = intersect(ramp, ground)
@@ -439,14 +445,17 @@ def recognize(cap: Capture, image_id: str) -> Result:
         ]
         ball, ball_warnings = pick_ball(up_circles, low, high, stroke)
         candidates = ramp_ball_candidates(up_circles, low, high, stroke)
+        # `balls` lists balls only: drawn squares are blocks, simulated via ball.shape/other_balls
         balls = [Ball(center=tuple(c.center), radius=c.radius, confidence=round(c.score, 3))
-                 for _, c in sorted(candidates, key=lambda tc: tc[0])]
-        if ball is not None:
+                 for _, c in sorted(candidates, key=lambda tc: tc[0]) if c.shape == "ball"]
+        if ball is not None and ball.shape == "ball":
             # Always retain the historical primary even if other candidate filters exclude it.
             if not any(math.dist(b.center, ball.center) < .6 * max(b.radius, ball.radius) for b in balls):
                 balls.append(ball)
             balls.sort(key=lambda b: math.dist(b.center, ball.center))
         warnings += ball_warnings
+        if ball is not None:
+            others = pick_others(up_circles, ball, low, high, ground, stroke)
 
     rec = Recognition(
         image_id=image_id,
@@ -457,6 +466,7 @@ def recognize(cap: Capture, image_id: str) -> Result:
         ball=ball,
         balls=balls,
         selected_ball_index=0 if balls else None,
+        other_balls=others,
         labels=[],
         warnings=warnings,
     )
@@ -499,12 +509,66 @@ def pick_ball(circles: list[Circle], low: np.ndarray, high: np.ndarray,
         pool = [(t, c) for t, c in pool if c.radius >= 0.5 * biggest]
     if not pool:
         return None, ["no ball found — draw a circle on the ramp"]
-    if len(pool) > 1:
-        warnings.append(f"{len(pool)} balls found — retained all; default primary is nearest the ramp top")
     t, c = min(pool, key=lambda tc: tc[0])
     if not on:
         warnings.append("ball is not touching the ramp — placed it on the ramp")
-    return Ball(center=tuple(c.center), radius=c.radius, confidence=round(c.score, 3)), warnings
+    return Ball(center=tuple(c.center), radius=c.radius, confidence=round(c.score, 3),
+                shape=c.shape), warnings
+
+
+def pick_others(circles: list[Circle], ball: Ball, low: np.ndarray, high: np.ndarray,
+                ground: Seg, stroke: float) -> list[Ball]:
+    """Balls other than the main one, resting on the ramp below/above it or on the ground."""
+    main = np.array(ball.center)
+    ground_y = float((ground.p1[1] + ground.p2[1]) / 2)
+    gx0, gx1 = sorted((float(ground.p1[0]), float(ground.p2[0])))
+    out: list[Ball] = []
+    for c in circles:
+        # same size class as the drawn ball (handwriting loops are much smaller), not itself
+        if not 0.5 * ball.radius <= c.radius <= 2 * ball.radius:
+            continue
+        if np.linalg.norm(c.center - main) < ball.radius:  # its own inner or outer outline
+            continue
+        t, d = _ramp_coords(c.center, low, high)
+        on_ramp = 0 <= t <= 1.0 and -0.5 * c.radius <= d <= 2.2 * c.radius + stroke
+        under_ramp = 0 < t < 1 and d < 0
+        on_ground = (abs(c.center[1] + c.radius - ground_y) <= 0.6 * c.radius + stroke
+                     and gx0 - c.radius <= c.center[0] <= gx1 + c.radius and not under_ramp)
+        if on_ramp or on_ground:
+            if any(np.linalg.norm(c.center - np.array(o.center)) < c.radius for o in out):
+                continue  # inner and outer outline of the same drawn circle
+            out.append(Ball(center=tuple(c.center), radius=c.radius, confidence=round(c.score, 3),
+                            shape=c.shape))
+    return out
+
+
+def assign_bodies(rec: Recognition, stroke: float) -> None:
+    """Pick the simulated bodies from every verified ball and block: the main one (nearest
+    the ramp top) and the others it can hit. Used after the hybrid path adds Gemini-verified
+    balls and blocks (rec.balls, rec.blocks); sets rec.ball, rec.other_balls and
+    rec.selected_ball_index (None when the main body is a block)."""
+    ramp = next((line for line in rec.lines if line.role == "ramp"), None)
+    ground = next((line for line in rec.lines if line.role == "ground"), None)
+    if ramp is None or ground is None:
+        return
+    p1, p2 = np.array(ramp.p1), np.array(ramp.p2)
+    low, high = (p1, p2) if p1[1] > p2[1] else (p2, p1)
+    circles = [Circle(np.array(b.center), b.radius, b.confidence, "ball") for b in rec.balls]
+    for block in rec.blocks:
+        corners = np.array(block.vertices)
+        half = float(np.mean(np.linalg.norm(np.roll(corners, -1, axis=0) - corners, axis=1))) / 2
+        circles.append(Circle(np.array(block.center), half, block.confidence, "block"))
+    ball, warnings = pick_ball(circles, low, high, stroke)
+    if ball is None:
+        return
+    rec.ball = ball
+    ground_seg = Seg(np.array(ground.p1), np.array(ground.p2), ground.confidence)
+    rec.other_balls = pick_others(circles, ball, low, high, ground_seg, stroke)
+    rec.selected_ball_index = (
+        min(range(len(rec.balls)), key=lambda i: math.dist(rec.balls[i].center, ball.center))
+        if ball.shape == "ball" and rec.balls else None)
+    rec.warnings = [w for w in rec.warnings if not w.startswith("no ball found")]
+    rec.warnings += [w for w in warnings if w not in rec.warnings]
 
 
 def overlay_png(image: np.ndarray, rec: Recognition) -> bytes:
@@ -517,7 +581,11 @@ def overlay_png(image: np.ndarray, rec: Recognition) -> bytes:
         draw.line([line.p1, line.p2], fill=colors[line.role], width=width)
     for index, detected in enumerate(rec.balls or ([rec.ball] if rec.ball else [])):
         (cx, cy), r = detected.center, detected.radius
-        draw.ellipse([cx - r, cy - r, cx + r, cy + r], outline=(22, 163, 74), width=width)
+        box = [cx - r, cy - r, cx + r, cy + r]
+        if detected.shape == "block":  # the main body can be a drawn square
+            draw.rectangle(box, outline=(22, 163, 74), width=width)
+        else:
+            draw.ellipse(box, outline=(22, 163, 74), width=width)
         draw.text((cx + r + width, cy - r), f"ball {index + 1}", fill=(22, 120, 60),
                   font_size=max(14, width * 3))
     for obj in rec.objects:
@@ -530,6 +598,13 @@ def overlay_png(image: np.ndarray, rec: Recognition) -> bytes:
     for index, block in enumerate(rec.blocks):
         draw.line([*block.vertices, block.vertices[0]], fill=(147, 51, 234), width=width)
         draw.text(block.vertices[0], f"block {index+1}", fill=(147, 51, 234), font_size=max(14,width*3))
+    for other in rec.other_balls:
+        (cx, cy), r = other.center, other.radius
+        if other.shape == "block":
+            draw.rectangle([cx - r, cy - r, cx + r, cy + r], outline=(234, 88, 12), width=width)
+        elif not any(math.dist(other.center, b.center) < 0.6 * max(other.radius, b.radius)
+                     for b in rec.balls):  # already outlined (and numbered) as one of rec.balls
+            draw.ellipse([cx - r, cy - r, cx + r, cy + r], outline=(234, 88, 12), width=width)
     buf = io.BytesIO()
     pil.save(buf, format="PNG")
     return buf.getvalue()

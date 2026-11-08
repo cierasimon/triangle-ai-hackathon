@@ -12,7 +12,7 @@ from pydantic import BaseModel, Field, model_validator
 from app.config import get_settings
 from app.contracts import Ball, DetectedObject, Line
 from app.cv.recognize import (
-    Result, Seg, _coverage, detect_circles, intersect, pick_ball, refit,
+    Result, Seg, _coverage, assign_bodies, detect_circles, intersect, pick_ball, refit,
 )
 
 Unit = Annotated[float, Field(ge=0, le=1000, allow_inf_nan=False)]
@@ -307,6 +307,8 @@ def fuse(result: Result, analysis: VisionAnalysis) -> Result:
     if semantic_count != len(rec.balls):
         rec.warnings.append(f"Gemini proposed {semantic_count} balls; OpenCV confirmed {len(rec.balls)}. Inspect the difference.")
     rec.objects = objects
+    # simulate what was verified: main body and collision targets from balls and blocks
+    assign_bodies(rec, result.debug.get("stroke", 3.))
     from app.cv.parameters import bind_parameters
     bind_parameters(rec, analysis.parameters, objects)
     rec.gemini_summary = analysis.summary

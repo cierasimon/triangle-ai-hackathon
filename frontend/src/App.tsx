@@ -1,37 +1,18 @@
 import { useMemo, useRef, useState } from "react";
 import { api } from "./api";
-import { Compare } from "./components/Compare";
 import { Controls } from "./components/Controls";
 import { ExportPanel } from "./components/ExportPanel";
-import { Formula } from "./components/Formula";
 import { RecognitionDetails } from "./components/RecognitionDetails";
 import { SceneCanvas } from "./components/SceneCanvas";
-import { TaDrawer } from "./components/TaDrawer";
-import { duration } from "./geometry";
+import { TaPanel } from "./components/TaPanel";
+import { duration, rampOf } from "./geometry";
 import { predict } from "./physics";
 import type { ParamsOverride, Run, UploadResponse } from "./types";
 import { usePlayback } from "./usePlayback";
 
-const fmt = (v: number | null, digits = 3) => (v === null ? "—" : v.toFixed(digits));
-const RERUN_DELAY_MS = 150;
-const PARAM_LABELS: Record<string, string> = {
-  angle_deg: "θ", mass_kg: "m", gravity: "g", friction: "μ",
-};
-
-/** The params the learner has set themselves on a run (e.g. one a quiz created). */
-function overrideFrom(run: Run): ParamsOverride {
-  const p = run.scene.params;
-  const out: Record<string, unknown> = {};
-  for (const [k, src] of Object.entries(p.sources)) if (src === "user") out[k] = p[k as keyof typeof p];
-  return out as ParamsOverride;
-}
-
-function changeSummary(run: Run): string {
-  const parts = Object.entries(run.changed).map(
-    ([k, [, b]]) => `${PARAM_LABELS[k] ?? k} ${+b.toFixed(2)}`,
-  );
-  return parts.length ? parts.join(", ") : run.index === 1 ? "as drawn" : "";
-}
+const fmt = (v: number | null, digits = 2) => (v === null ? "—" : v.toFixed(digits));
+const RERUN_DELAY_MS = 300;
+const title = (s: string) => s[0].toUpperCase() + s.slice(1);
 
 export function App() {
   const [upload, setUpload] = useState<UploadResponse | null>(null);
@@ -40,10 +21,11 @@ export function App() {
   const [override, setOverride] = useState<ParamsOverride>({});
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [dragAngle, setDragAngle] = useState<number | null>(null);
-  const [snap, setSnap] = useState(false);
   const [useGemini, setUseGemini] = useState(true);
+  // changes being made right now (sliders, drags): shown at once, simulated after a pause
+  const [draft, setDraft] = useState<ParamsOverride>({});
   const releaseTimer = useRef<number | undefined>(undefined);
+  const pending = useRef<ParamsOverride>({});
 
   const run = runs.find((r) => r.run_id === currentId) ?? null;
   const { t, playing, play, reset } = usePlayback(run ? duration(run.frames) : 0, run?.run_id ?? "");
@@ -87,45 +69,51 @@ export function App() {
       setError(e instanceof Error ? e.message : String(e));
     } finally {
       setBusy(false);
-      setDragAngle(null);
+      setDraft({});
     }
   }
 
-  function onDrag(angle: number) {
+  /** Preview a change right away, then rerun the simulation once the learner pauses. */
+  function preview(patch: ParamsOverride, reason: "change" | "drag") {
+    setDraft((d) => ({ ...d, ...patch }));
+    pending.current = { ...pending.current, ...patch };
     window.clearTimeout(releaseTimer.current);
-    setDragAngle(angle);
+    releaseTimer.current = window.setTimeout(() => {
+      const next = { ...override, ...pending.current };
+      pending.current = {};
+      change(next, reason);
+    }, RERUN_DELAY_MS);
   }
 
-  function onDragEnd(angle: number) {
-    window.clearTimeout(releaseTimer.current);
-    releaseTimer.current = window.setTimeout(
-      () => change({ ...override, angle_deg: angle }, "drag"),
-      RERUN_DELAY_MS,
-    );
-  }
-
-  const rec = upload?.recognition;
-  const v = run?.verification;
   const p = run?.scene.params;
+  const v = run?.verification;
   const drawnAngle = runs[0]?.scene.params.angle_deg ?? null;
-  const live = useMemo(
-    () => (run && p && dragAngle != null
-      ? predict(dragAngle, run.scene.ramp_length_m, p.gravity, p.friction, p.motion)
-      : null),
-    [run, p, dragAngle],
-  );
-  const comparePair = useMemo<[string, string] | null>(() => {
-    if (runs.length < 2 || !run) return null;
-    const i = runs.findIndex((r) => r.run_id === run.run_id);
-    return [runs[Math.max(0, i - 1)].run_id, run.run_id];
-  }, [runs, run]);
+  const fullLength = run ? rampOf(run.scene).fullLength : 1;
+  const angle = draft.angle_deg ?? p?.angle_deg ?? 0;
+  const length = draft.ramp_full_m ?? fullLength;
+  const mass = draft.mass_kg ?? p?.mass_kg ?? 1;
+  const other = run?.scene.others[0];
+  const otherMass = other ? draft.other_mass_kg ?? other.mass_kg : null;
+  const changing = Object.keys(draft).length > 0;
+  const live = useMemo(() => {
+    const geometry = draft.angle_deg ?? draft.ramp_full_m ?? draft.start_fraction;
+    if (!run || !p || geometry === undefined) return null;
+    const travel = draft.start_fraction !== undefined
+      ? draft.start_fraction * length
+      : (run.scene.ramp_length_m * length) / fullLength;
+    return predict(angle, travel, p.gravity, p.friction, p.motion);
+  }, [run, p, draft, angle, length, fullLength]);
+  const time = live ? live.time_s : v?.simulated_time_s ?? null;
+  const speed = live ? live.speed_m_s : v?.simulated_speed_m_s ?? null;
+  const hit = changing ? null : run?.collision;
 
   return (
+    <div className="page">
     <main>
       <header>
         <h1>PaperPhysics</h1>
         <label className="upload">
-          {busy && !run ? "Working…" : "Take / choose a photo"}
+          {busy && !run ? "Working…" : upload ? "New photo" : "Take / choose a photo"}
           <input
             type="file"
             accept="image/*"
@@ -143,132 +131,95 @@ export function App() {
         Turn off for local OpenCV recognition. This choice applies to the next upload.</p>
       {busy && !run && <p role="status">{useGemini ? "Recognizing with Gemini and OpenCV…" : "Recognizing locally…"}</p>}
       {error && <p className="error">{error}</p>}
-
-      {upload && (
-        <div className="grid">
-          <section>
-            <h2>Recognized</h2>
-            <img src={upload.overlay_png_url} alt="photo with recognized outlines" />
-            {rec && <RecognitionDetails recognition={rec} />}
-            {rec && rec.warnings.length > 0 && (
-              <ul className="warnings">
-                {rec.warnings.map((w) => <li key={w}>{w}</li>)}
-              </ul>
-            )}
-            <p className="muted">
-              {rec?.lines.map((l) => l.role).join(" + ")}
-              {rec?.ball ? " + ball" : " · no ball"} · paper {rec?.paper_found ? "found" : "not found"}
-            </p>
-          </section>
-
-          {run && v && p && (
-            <section>
-              <div className="row wrap">
-                <h2>Run {run.index}</h2>
-                {busy && <span className="muted">running…</span>}
-              </div>
-              <SceneCanvas
-                run={run}
-                t={t}
-                onDrag={busy ? undefined : onDrag}
-                onDragEnd={onDragEnd}
-                dragAngle={dragAngle}
-                originalAngle={drawnAngle}
-                snap={snap}
-              />
-              <div className="row wrap">
-                <button onClick={play} disabled={playing || dragAngle != null}>Play</button>
-                <button onClick={reset}>Reset</button>
-                <label className="muted check">
-                  <input type="checkbox" checked={snap} onChange={(e) => setSnap(e.target.checked)} /> snap to 5°
-                </label>
-                {dragAngle == null && <span className="muted">drag the red handle to tilt the ramp</span>}
-              </div>
-              {live && dragAngle != null && (
-                <p className="live">
-                  θ = {dragAngle.toFixed(1)}° ·{" "}
-                  {live.will_move
-                    ? `predicted t = ${fmt(live.time_s, 2)} s · v = ${fmt(live.speed_m_s, 2)} m/s`
-                    : `the ball will not slide at this angle (μ = ${p.friction} ≥ tan θ = ${Math.tan((dragAngle * Math.PI) / 180).toFixed(2)})`}
-                </p>
-              )}
-
-              <div className="history">
-                {runs.map((r) => (
-                  <button key={r.run_id} className={r.run_id === run.run_id ? "chip active" : "chip"}
-                          onClick={() => setCurrentId(r.run_id)}>
-                    Run {r.index}
-                    <span className="chip-note">{changeSummary(r)}</span>
-                  </button>
-                ))}
-              </div>
-
-              <Controls
-                params={p}
-                busy={busy}
-                angleOverridden={override.angle_deg !== undefined}
-                onChange={(patch) => change({ ...override, ...patch })}
-                onResetAngle={() => {
-                  const rest = { ...override };
-                  delete rest.angle_deg;
-                  change(rest);
-                }}
-                onResetAll={() => change({})}
-              />
-
-              <table>
-                <tbody>
-                  {(["angle_deg", "mass_kg", "gravity", "friction", "motion"] as const).map((k) => (
-                    <tr key={k}>
-                      <th>{k}</th>
-                      <td>{typeof p[k] === "number" ? +(p[k] as number).toFixed(2) : p[k]}</td>
-                      <td><span className={`badge ${p.sources[k] ?? "default"}`}>{p.sources[k] ?? "default"}</span></td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              {p.defaults_used.length > 0 && (
-                <p className="muted">
-                  Defaults used: {p.defaults_used.filter((k) => k !== "ball").join(", ")}
-                  {p.defaults_used.includes("ball") && " · no ball was drawn, so one starts near the top"}
-                </p>
-              )}
-              <table>
-                <thead>
-                  <tr><th></th><th>predicted</th><th>simulated</th></tr>
-                </thead>
-                <tbody>
-                  <tr><th>time (s)</th><td>{fmt(v.predicted_time_s)}</td><td>{fmt(v.simulated_time_s)}</td></tr>
-                  <tr><th>speed (m/s)</th><td>{fmt(v.predicted_speed_m_s)}</td><td>{fmt(v.simulated_speed_m_s)}</td></tr>
-                  <tr className={v.ok ? "" : "bad"}>
-                    <th>error</th><td colSpan={2}>{v.error_pct === null ? "—" : `${v.error_pct.toFixed(2)} %`}</td>
-                  </tr>
-                </tbody>
-              </table>
-              <Formula latex={v.formula_latex} />
-              {v.note && <p className="muted">{v.note}</p>}
-              <ExportPanel run={run} />
-            </section>
-          )}
-        </div>
+      {!upload && !busy && (
+        <p className="hint">Draw a ramp and a ball on paper, then take a photo of it.</p>
       )}
 
-      {comparePair && <Compare runs={runs} defaultPair={comparePair} />}
+      {upload && !run && !busy && (
+        <section className="panel recognized">
+          <h2>Recognized</h2>
+          <img src={upload.overlay_png_url} alt="photo with recognized outlines" />
+          <RecognitionDetails recognition={upload.recognition} />
+          {upload.recognition.warnings.length > 0 && (
+            <ul className="warnings">
+              {upload.recognition.warnings.map((w) => <li key={w}>{w}</li>)}
+            </ul>
+          )}
+        </section>
+      )}
 
-      <TaDrawer
-        runs={runs}
-        busy={busy}
-        onApply={(patch) => {
-          // the backend sends unset fields as null; only the set ones are the change
-          const set = Object.fromEntries(Object.entries(patch).filter(([, v]) => v != null));
-          change({ ...override, ...set });
-        }}
-        onRun={(r) => {
-          setRuns((prev) => [...prev, r]);
-          setCurrentId(r.run_id);
-          setOverride(overrideFrom(r));
-        }}
-      />
+      {run && p && upload && (
+        <div className="lab">
+          <section className="stage">
+            <SceneCanvas
+              run={run}
+              t={t}
+              onDrag={busy ? undefined : (a, l) => setDraft((d) => ({ ...d, angle_deg: a, ramp_full_m: l }))}
+              onDragEnd={(a, l) => preview({ angle_deg: a, ramp_full_m: l }, "drag")}
+              dragAngle={draft.angle_deg}
+              dragLength={draft.ramp_full_m}
+              originalAngle={drawnAngle}
+              mass={mass}
+              otherMass={otherMass ?? undefined}
+              onBallDrag={busy ? undefined : (f) => setDraft((d) => ({ ...d, start_fraction: f }))}
+              onBallDragEnd={(f) => preview({ start_fraction: f }, "change")}
+              dragStart={draft.start_fraction}
+              onOtherDrag={busy || !other ? undefined
+                : (o) => setDraft((d) => ({ ...d, other_surface: o.surface, other_at: o.at }))}
+              onOtherDragEnd={(o) => preview({ other_surface: o.surface, other_at: o.at }, "change")}
+              dragOther={draft.other_surface && draft.other_at !== undefined
+                ? { surface: draft.other_surface, at: draft.other_at } : null}
+            />
+          </section>
+
+          <aside className="side">
+            <div className="panel">
+              <h2>{other ? "Ramp & objects" : `Ramp & ${run.scene.ball_shape}`}</h2>
+              <Controls
+                angle={angle}
+                length={length}
+                mass={mass}
+                otherMass={otherMass}
+                disabled={busy}
+                onAngle={(a) => preview({ angle_deg: a }, "change")}
+                onLength={(l) => preview({ ramp_full_m: l }, "change")}
+                onMass={(m) => preview({ mass_kg: m }, "change")}
+                onOtherMass={(m) => preview({ other_mass_kg: m }, "change")}
+              />
+            </div>
+            <div className="panel">
+              <h2>Result</h2>
+              <div className="stat"><span>Time to bottom</span><strong>{fmt(time)} s</strong></div>
+              <div className="stat"><span>Speed at bottom</span><strong>{fmt(speed)} m/s</strong></div>
+              {hit && (
+                <>
+                  <h3>Collision at {fmt(hit.t)} s</h3>
+                  <div className="stat"><span>{title(run.scene.ball_shape)} 1</span><strong>{fmt(hit.v1_before)} → {fmt(hit.v1_after)} m/s</strong></div>
+                  <div className="stat"><span>{title(run.scene.others[hit.other]?.shape ?? "ball")} 2</span><strong>{fmt(hit.v2_before)} → {fmt(hit.v2_after)} m/s</strong></div>
+                </>
+              )}
+            </div>
+            <div className="buttons">
+              <button className="wide" onClick={play} disabled={playing || changing}>Play</button>
+              <button onClick={reset}>Reset</button>
+              <button disabled={busy} onClick={() => change({})}>Back to drawing</button>
+            </div>
+            <ExportPanel run={run} />
+            <details className="photo">
+              <summary>Your photo</summary>
+              <img src={upload.overlay_png_url} alt="photo with recognized outlines" />
+              <RecognitionDetails recognition={upload.recognition} />
+              {upload.recognition.warnings.length > 0 && (
+                <ul className="warnings">
+                  {upload.recognition.warnings.map((w) => <li key={w}>{w}</li>)}
+                </ul>
+              )}
+            </details>
+          </aside>
+        </div>
+      )}
     </main>
+    <TaPanel runs={runs} />
+    </div>
   );
 }
