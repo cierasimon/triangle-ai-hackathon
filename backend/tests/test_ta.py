@@ -154,11 +154,13 @@ def test_answers_cite_runs(client, lab):
 
 
 def test_out_of_scope(client, lab):
-    a = ask(client, "What if I push the ball with an initial speed of 5 m/s?")
+    a = ask(client, "What if I attach a spring to the ball?")
     assert "outside what this lab simulates" in a["answer_md"]
 
 
-def test_explains_recognition_problems(client):
+def test_explains_recognition_problems(client, monkeypatch):
+    # the photo's drawn square is a block now; switch block detection off to get a picture with no body
+    monkeypatch.setattr("app.cv.recognize.detect_blocks", lambda *_: [])
     image_id = upload(client, NO_BALL)
     run(client, image_id)
     a = ask(client, "What did you read from my drawing?")

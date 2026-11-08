@@ -26,10 +26,18 @@ function Markdown({ md }: { md: string }) {
   );
 }
 
+/** Offered before the first question. */
+const STARTERS = [
+  "How long does it take to reach the bottom?",
+  "What forces act on the ball?",
+  "What happens if the ramp is steeper?",
+];
+
 export function TaPanel({ runs }: { runs: Run[] }) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [question, setQuestion] = useState("");
   const [thinking, setThinking] = useState(false);
+  const [suggestions, setSuggestions] = useState<string[]>(STARTERS);
   const endRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -45,6 +53,7 @@ export function TaPanel({ runs }: { runs: Run[] }) {
     try {
       const a = await api.ask({ question: text, level: "beginner" });
       setMessages((m) => [...m, { role: "ta", md: a.answer_md, flags: a.flags }]);
+      if (a.suggestions.length) setSuggestions(a.suggestions);
     } catch (e) {
       setMessages((m) => [...m, { role: "ta", md: `*Something went wrong: ${e instanceof Error ? e.message : e}*` }]);
     } finally {
@@ -71,6 +80,13 @@ export function TaPanel({ runs }: { runs: Run[] }) {
         {thinking && <p className="muted">thinking…</p>}
         <div ref={endRef} />
       </div>
+      {ready && (
+        <div className="ta-suggest" role="group" aria-label="Suggested questions">
+          {suggestions.map((q) => (
+            <button key={q} type="button" className="bubble" disabled={thinking} onClick={() => send(q)}>{q}</button>
+          ))}
+        </div>
+      )}
       <form className="ta-input" onSubmit={(e) => { e.preventDefault(); if (question.trim()) send(question.trim()); }}>
         <input value={question} onChange={(e) => setQuestion(e.target.value)} disabled={!ready}
                placeholder="Ask a question" aria-label="question" />

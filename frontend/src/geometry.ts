@@ -1,8 +1,8 @@
 // Ramp geometry in meters (y up), shared by the canvas and the drag preview.
 import type { Frame, OtherBall, Point, Scene } from "./types";
 
-export const ANGLE_MIN = 5;
-export const ANGLE_MAX = 75;
+export const ANGLE_MIN = 0;
+export const ANGLE_MAX = 90;
 export const RAMP_MIN_M = 0.2; // same limits as backend/app/scene/builder.py
 export const RAMP_MAX_M = 5;
 

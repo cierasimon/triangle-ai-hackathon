@@ -35,6 +35,12 @@ class Settings:
     google_cloud_project: str = ""
     google_cloud_location: str = "global"
     gemini_vision_model: str = "gemini-3.5-flash-lite"
+    gemini_text_model: str = "gemini-3.5-flash-lite"
+
+    @property
+    def gemini_chat_enabled(self) -> bool:
+        """The TA uses Gemini (Vertex AI, local ADC) once a Cloud project is set, unless LLM_PROVIDER=none."""
+        return self.llm_provider != "none" and bool(self.google_cloud_project)
 
     @property
     def llm_enabled(self) -> bool:
@@ -54,4 +60,5 @@ def get_settings() -> Settings:
         google_cloud_project=os.environ.get("GOOGLE_CLOUD_PROJECT", ""),
         google_cloud_location=os.environ.get("GOOGLE_CLOUD_LOCATION", "global"),
         gemini_vision_model=os.environ.get("GEMINI_VISION_MODEL", "gemini-3.5-flash-lite"),
+        gemini_text_model=os.environ.get("GEMINI_TEXT_MODEL", "gemini-3.5-flash-lite"),
     )

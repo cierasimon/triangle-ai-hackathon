@@ -15,14 +15,14 @@ from app.physics.whycard import why_card
 
 AVAILABLE_CHANGES = {
     "angle_deg": [15, 30, 45],
-    "angle_range_deg": [5, 75],
+    "angle_range_deg": [0, 90],
     "mass": "×2",
     "gravity_m_s2": {"Earth": 9.81, "Moon": 1.62, "Mars": 3.71},
     "friction": [0, 0.1, 0.3, 0.6],
+    "initial_speed_m_s": "-10 to 10 (positive = down the ramp, negative = up the ramp)",
     "motion": ["slide", "roll"],
 }
 OUT_OF_SCOPE = [
-    "Initial speed (e.g. a written 'v = 5 m/s'): the ball always starts from rest.",
     "Blocks, springs, collisions, pendulums: only a ball on a ramp is simulated.",
     "Static friction and air resistance are not modelled.",
 ]
@@ -41,6 +41,7 @@ def run_summary(run: Run) -> dict:
         "mass_kg": _r(p.mass_kg),
         "gravity_m_s2": _r(p.gravity),
         "friction": _r(p.friction),
+        "initial_speed_m_s": _r(p.initial_speed_m_s),
         "motion": p.motion,
         "sources": p.sources,
         "distance_L_m": _r(run.scene.ramp_length_m),

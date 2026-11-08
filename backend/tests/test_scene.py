@@ -39,7 +39,7 @@ def test_meters_and_angle(rises):
     assert scene.ball_radius_m == pytest.approx(20 / 800)
     assert scene.ramp_length_m == pytest.approx(400 / 800)  # 500 px ramp, ball 100 px down
     assert scene.params.sources["angle_deg"] == "drawing"
-    assert scene.params.defaults_used == ["mass_kg", "gravity", "friction", "motion"]
+    assert scene.params.defaults_used == ["mass_kg", "gravity", "friction", "initial_speed_m_s", "motion"]
 
 
 def test_labels_and_override():
@@ -66,8 +66,8 @@ def test_start_fraction_moves_the_ball():
 
 
 def test_clamp_and_no_ball():
-    result = build_scene(rec(80, ball=False))
-    assert result.scene.params.angle_deg == 75
+    result = build_scene(rec(30, ball=False), ParamsOverride(angle_deg=100))
+    assert result.scene.params.angle_deg == 90
     assert "ball" in result.scene.params.defaults_used
     assert any("outside" in w for w in result.warnings)
     assert any("no ball" in w for w in result.warnings)

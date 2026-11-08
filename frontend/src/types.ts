@@ -64,6 +64,7 @@ export interface Recognition {
   gemini_model: string | null;
   gemini_summary: string | null;
   other_balls: Ball[]; // more balls on the ramp or the ground, hit by the main one
+  other_speeds: number[]; // initial speed read for each of other_balls
   labels: Label[];
   warnings: string[];
 }
@@ -73,6 +74,7 @@ export interface Params {
   mass_kg: number;
   gravity: number;
   friction: number;
+  initial_speed_m_s: number; // + down the ramp, - up the ramp
   motion: Motion;
   defaults_used: string[];
   sources: Record<string, ParamSource>;
@@ -85,6 +87,7 @@ export interface OtherBall {
   shape: Shape;
   radius_m: number; // half the side for a block
   mass_kg: number;
+  speed_m_s: number; // initial speed: on the ramp + down / - up; on the ground + right / - left
   center_m: Point; // resting position for this scene's ramp
 }
 
@@ -162,10 +165,11 @@ export interface CornersRequest {
   corners: Point[];
 }
 
-export type ParamsOverride = Partial<Pick<Params, "angle_deg" | "mass_kg" | "gravity" | "friction" | "motion">> & {
+export type ParamsOverride = Partial<Pick<Params, "angle_deg" | "mass_kg" | "gravity" | "friction" | "initial_speed_m_s" | "motion">> & {
   start_fraction?: number; // ball start along the ramp: 0 = bottom, 1 = top
   ramp_full_m?: number; // whole ramp length; the ball keeps its place on it
   other_mass_kg?: number; // mass of every other ball
+  other_speeds_m_s?: (number | null)[]; // initial speed of each other body (B, C, ...)
   other_surface?: "ramp" | "ground"; // the learner dragged the 2nd object:
   other_at?: number; // ...to here (as OtherBall.at); both or neither
 };
@@ -224,6 +228,7 @@ export interface AskResponse {
   based_on: string[]; // run ids the answer relies on
   flags: string[]; // numbers matching nothing in the context, as written in the answer
   followups: FollowUp[];
+  suggestions: string[]; // three likely next questions, clickable
   source: "llm" | "template";
 }
 

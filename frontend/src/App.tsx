@@ -1,13 +1,15 @@
 import { useMemo, useRef, useState } from "react";
 import { api } from "./api";
-import { Controls } from "./components/Controls";
+import { Controls, letter, type BodyControl } from "./components/Controls";
+import { Equations } from "./components/Equations";
 import { ExportPanel } from "./components/ExportPanel";
 import { RecognitionDetails } from "./components/RecognitionDetails";
+import { VelocityGraph } from "./components/VelocityGraph";
 import { SceneCanvas } from "./components/SceneCanvas";
 import { TaPanel } from "./components/TaPanel";
 import { duration, rampOf } from "./geometry";
 import { predict } from "./physics";
-import type { ParamsOverride, Run, UploadResponse } from "./types";
+import type { Params, ParamsOverride, Run, UploadResponse } from "./types";
 import { usePlayback } from "./usePlayback";
 
 const fmt = (v: number | null, digits = 2) => (v === null ? "—" : v.toFixed(digits));
@@ -92,17 +94,40 @@ export function App() {
   const angle = draft.angle_deg ?? p?.angle_deg ?? 0;
   const length = draft.ramp_full_m ?? fullLength;
   const mass = draft.mass_kg ?? p?.mass_kg ?? 1;
+  const friction = draft.friction ?? p?.friction ?? 0;
+  const gravity = draft.gravity ?? p?.gravity ?? 9.81;
+  const v0 = draft.initial_speed_m_s ?? p?.initial_speed_m_s ?? 0;
+  // every object, A first: initial speed (signed), shown live while a slider moves
+  const otherSpeeds = (run?.scene.others ?? []).map((o, i) => draft.other_speeds_m_s?.[i] ?? o.speed_m_s);
+  const bodies: BodyControl[] = run ? [
+    { name: letter(0), speed: v0, surface: "ramp", tag: tag("initial_speed_m_s") },
+    ...run.scene.others.map((o, i) => ({
+      name: letter(i + 1), speed: otherSpeeds[i], surface: o.surface,
+      tag: draft.other_speeds_m_s?.[i] != null || override.other_speeds_m_s?.[i] != null ? "changed"
+        : o.speed_m_s !== 0 ? "from drawing" : "default",
+    })),
+  ] : [];
+  function setSpeed(body: number, v: number) {
+    if (body === 0) return preview({ initial_speed_m_s: v }, "change");
+    preview({ other_speeds_m_s: otherSpeeds.map((s, i) => (i === body - 1 ? v : s)) }, "change");
+  }
+  function tag(key: keyof ParamsOverride & keyof Params): string {
+    if (draft[key] !== undefined) return "changed";
+    const src = p?.sources[key] ?? "default";
+    return src === "user" ? "changed" : src === "default" ? "default" : "from drawing";
+  }
   const other = run?.scene.others[0];
   const otherMass = other ? draft.other_mass_kg ?? other.mass_kg : null;
   const changing = Object.keys(draft).length > 0;
+  const travel = draft.start_fraction !== undefined
+    ? draft.start_fraction * length
+    : run ? (run.scene.ramp_length_m * length) / fullLength : 0;
   const live = useMemo(() => {
-    const geometry = draft.angle_deg ?? draft.ramp_full_m ?? draft.start_fraction;
-    if (!run || !p || geometry === undefined) return null;
-    const travel = draft.start_fraction !== undefined
-      ? draft.start_fraction * length
-      : (run.scene.ramp_length_m * length) / fullLength;
-    return predict(angle, travel, p.gravity, p.friction, p.motion);
-  }, [run, p, draft, angle, length, fullLength]);
+    const touched = ["angle_deg", "ramp_full_m", "start_fraction", "friction", "gravity", "initial_speed_m_s"]
+      .some((k) => draft[k as keyof ParamsOverride] !== undefined);
+    if (!run || !p || !touched) return null;
+    return predict(angle, travel, gravity, friction, p.motion, v0, length - travel);
+  }, [run, p, draft, angle, travel, length, gravity, friction, v0]);
   const time = live ? live.time_s : v?.simulated_time_s ?? null;
   const speed = live ? live.speed_m_s : v?.simulated_speed_m_s ?? null;
   const hit = changing ? null : run?.collision;
@@ -123,12 +148,11 @@ export function App() {
           />
         </label>
       </header>
-      <label className="muted check">
+      <label className="muted check" title="Applies to the next upload. Turn off for local OpenCV recognition.">
         <input type="checkbox" checked={useGemini} disabled={busy}
           onChange={e => setUseGemini(e.target.checked)} /> Use Gemini + OpenCV recognition
+        <span className="notice">· uploads are sent to Google Cloud and may incur API charges</span>
       </label>
-      <p className="muted">When enabled, uploads are sent to Google Cloud and may incur API charges.
-        Turn off for local OpenCV recognition. This choice applies to the next upload.</p>
       {busy && !run && <p role="status">{useGemini ? "Recognizing with Gemini and OpenCV…" : "Recognizing locally…"}</p>}
       {error && <p className="error">{error}</p>}
       {!upload && !busy && (
@@ -161,6 +185,7 @@ export function App() {
               originalAngle={drawnAngle}
               mass={mass}
               otherMass={otherMass ?? undefined}
+              speeds={bodies.map((b) => b.speed)}
               onBallDrag={busy ? undefined : (f) => setDraft((d) => ({ ...d, start_fraction: f }))}
               onBallDragEnd={(f) => preview({ start_fraction: f }, "change")}
               dragStart={draft.start_fraction}
@@ -170,6 +195,22 @@ export function App() {
               dragOther={draft.other_surface && draft.other_at !== undefined
                 ? { surface: draft.other_surface, at: draft.other_at } : null}
             />
+            <div className="below">
+            <VelocityGraph run={run} t={t} />
+            <Equations
+              run={run}
+              angle={angle}
+              mass={mass}
+              otherMass={otherMass}
+              friction={friction}
+              gravity={gravity}
+              v0={v0}
+              travel={travel}
+              time={time}
+              speed={speed}
+              changing={changing}
+            />
+            </div>
           </section>
 
           <aside className="side">
@@ -180,11 +221,21 @@ export function App() {
                 length={length}
                 mass={mass}
                 otherMass={otherMass}
+                friction={friction}
+                gravity={gravity}
+                bodies={bodies}
+                tags={{
+                  angle_deg: tag("angle_deg"), mass_kg: tag("mass_kg"), friction: tag("friction"),
+                  gravity: tag("gravity"), initial_speed_m_s: tag("initial_speed_m_s"),
+                }}
                 disabled={busy}
                 onAngle={(a) => preview({ angle_deg: a }, "change")}
                 onLength={(l) => preview({ ramp_full_m: l }, "change")}
                 onMass={(m) => preview({ mass_kg: m }, "change")}
                 onOtherMass={(m) => preview({ other_mass_kg: m }, "change")}
+                onFriction={(mu) => preview({ friction: mu }, "change")}
+                onGravity={(g) => preview({ gravity: g }, "change")}
+                onSpeed={setSpeed}
               />
             </div>
             <div className="panel">

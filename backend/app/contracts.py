@@ -66,7 +66,7 @@ class DiagramParameter(BaseModel):
 class Label(BaseModel):
     """A handwritten value such as "30°" or "2 kg"."""
 
-    key: Literal["angle_deg", "mass_kg", "friction", "gravity"]
+    key: Literal["angle_deg", "mass_kg", "friction", "gravity", "initial_speed_m_s"]
     value: float
     text: str
     confidence: float
@@ -89,6 +89,7 @@ class Recognition(BaseModel):
     gemini_model: str | None = None
     gemini_summary: str | None = None
     other_balls: list[Ball] = []  # more balls on the ramp or the ground, hit by the main one
+    other_speeds: list[float] = []  # initial speed read for each of other_balls (see OtherBall)
     labels: list[Label] = []
     warnings: list[str] = []
 
@@ -98,6 +99,7 @@ class Params(BaseModel):
     mass_kg: float = 1.0
     gravity: float = 9.81
     friction: float = 0.0  # kinetic, sliding model only
+    initial_speed_m_s: float = 0.0  # + down the ramp, - up the ramp
     motion: Motion
     defaults_used: list[str] = []
     sources: dict[str, ParamSource] = {}
@@ -111,6 +113,7 @@ class OtherBall(BaseModel):
     shape: Shape = "ball"
     radius_m: float  # half the side for a block
     mass_kg: float
+    speed_m_s: float = 0.0  # initial speed: on the ramp + down / - up; on the ground + right / - left
     center_m: Point  # resting position for this scene's ramp
 
 
@@ -196,6 +199,8 @@ class ParamsOverride(BaseModel):
     gravity: float | None = None
     friction: float | None = None
     motion: Motion | None = None
+    initial_speed_m_s: float | None = None  # + down the ramp, - up the ramp
+    other_speeds_m_s: list[float | None] | None = None  # same, for each other body (B, C, ...)
     start_fraction: float | None = None  # ball start along the ramp: 0 = bottom, 1 = top
     ramp_full_m: float | None = None  # whole ramp length; the ball keeps its place on it
     other_mass_kg: float | None = None  # mass of every other ball
@@ -265,6 +270,7 @@ class AskResponse(BaseModel):
     based_on: list[str]  # run ids the answer relies on, e.g. ["r1", "r2"]
     flags: list[str]  # numbers in the answer that match nothing in the context, as written
     followups: list[FollowUp]
+    suggestions: list[str] = []  # three likely next questions, shown as bubbles the learner can click
     source: Literal["llm", "template"] = "template"
 
 
