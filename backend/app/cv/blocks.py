@@ -43,4 +43,10 @@ def block_from_box(box, mask, stroke=3.):
             continue
         score = support - .1*math.dist(center, ((x1+x2)/2,(y1+y2)/2))/max(size,1)
         fits.append((score, Block(vertices=[tuple(p) for p in pts],center=tuple(center),confidence=float(support))))
-    return max(fits,key=lambda pair:pair[0])[1] if fits else None
+    unique = []
+    for _, block in sorted(fits, key=lambda pair: pair[0], reverse=True):
+        side = min(math.dist(a,b) for a,b in zip(block.vertices, block.vertices[1:]+block.vertices[:1]))
+        if not any(math.dist(block.center, other.center) < .3*side for other in unique):
+            unique.append(block)
+    # Nested contours of one stroke are duplicates; distinct shapes in one box are ambiguous.
+    return unique[0] if len(unique) == 1 else None

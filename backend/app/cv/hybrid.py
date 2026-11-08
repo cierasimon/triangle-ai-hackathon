@@ -1,4 +1,5 @@
 """Gemini semantics + ink-verified OpenCV geometry, in one image coordinate frame."""
+from collections import Counter
 import json
 import logging
 import math
@@ -233,7 +234,11 @@ def _ball_from_box(obj: DetectedObject, result: Result) -> Ball | None:
         if support >= .7:
             fits.append(Ball(center=(cx, cy), radius=(a + b) / 4,
                              confidence=round(float(min(1., support * circularity)), 3)))
-    return max(fits, key=lambda b: b.radius) if fits else None
+    unique = []
+    for ball in sorted(fits, key=lambda b: b.radius, reverse=True):
+        if not any(math.dist(ball.center, old.center) < .6*max(ball.radius, old.radius) for old in unique):
+            unique.append(ball)
+    return unique[0] if len(unique) == 1 else None
 
 
 def fuse(result: Result, analysis: VisionAnalysis) -> Result:
@@ -259,14 +264,22 @@ def fuse(result: Result, analysis: VisionAnalysis) -> Result:
                     index = len(rec.blocks)-1
                 obj.geometry_verified, obj.body_id = True, f"block-{index+1}"
             else:
-                rec.warnings.append("A proposed block has no verified closed quadrilateral; its geometry is unavailable.")
+                rec.warnings.append("A proposed block has no unique verified quadrilateral; confirm its outline and parameters.")
             continue
         if obj.kind != "ball":
             continue
         x1, y1, x2, y2 = obj.bbox
         matches = [b for b in rec.balls + candidates if x1 <= b.center[0] <= x2 and y1 <= b.center[1] <= y2
                    and .35 * min(x2 - x1, y2 - y1) <= 2 * b.radius <= 1.6 * max(x2 - x1, y2 - y1)]
-        ball = min(matches, key=lambda b: math.dist(b.center, ((x1+x2)/2, (y1+y2)/2))) if matches else _ball_from_box(obj, result)
+        unique = []
+        for match in matches:
+            if not any(math.dist(match.center, old.center) < .6 * max(match.radius, old.radius)
+                       for old in unique):
+                unique.append(match)
+        if len(unique) > 1:
+            rec.warnings.append("A Gemini ball box covers multiple circles; its parameters require confirmation.")
+            continue
+        ball = unique[0] if unique else _ball_from_box(obj, result)
         if ball:
             obj.geometry_verified = True
             if not any(math.dist(ball.center, old.center) < .6 * max(ball.radius, old.radius) for old in rec.balls):
@@ -275,6 +288,13 @@ def fuse(result: Result, analysis: VisionAnalysis) -> Result:
             obj.body_id = f"ball-{index+1}"
         else:
             rec.warnings.append("A Gemini ball proposal has insufficient ink support; the yellow box is unverified.")
+    # A proposal-to-body association must be one-to-one before labels can use it.
+    counts = Counter(obj.body_id for obj in objects if obj.body_id is not None)
+    for obj in objects:
+        if obj.body_id is not None and counts[obj.body_id] > 1:
+            obj.body_id, obj.geometry_verified = None, False
+    if any(count > 1 for count in counts.values()):
+        rec.warnings.append("Multiple Gemini proposals refer to the same body; their parameters require confirmation.")
     if rec.ball is None and rec.balls and rec.lines:
         ramp = next(l for l in rec.lines if l.role == "ramp")
         from app.cv.recognize import Circle

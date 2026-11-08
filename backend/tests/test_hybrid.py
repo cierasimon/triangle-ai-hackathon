@@ -122,3 +122,62 @@ def test_hybrid_upload_reaches_remote_boundary_offline(client, monkeypatch):
     assert response.status_code == 200
     assert response.json()["recognition"]["gemini_status"] == "success"
     assert len(calls) == 1
+
+
+def two_nearby_balls():
+    from app.contracts import Ball
+    result = blank_result()
+    result.recognition.balls = [Ball(center=(120,100),radius=20,confidence=.99),
+                                Ball(center=(160,100),radius=20,confidence=.99)]
+    result.recognition.ball = result.recognition.balls[0]
+    for ball in result.recognition.balls:
+        cv2.circle(result.mask,tuple(map(int,ball.center)),20,255,3)
+    return result
+
+
+@pytest.mark.parametrize('same_mass', [True, False])
+def test_box_covering_multiple_balls_cannot_bind_mass(same_mass):
+    result = two_nearby_balls()
+    analysis = hybrid.VisionAnalysis(objects=[{'kind':'ball','bbox':[225,233,475,433],'confidence':.99}]*2,
+        ramp=None, ground=None, summary='ambiguous', parameters=[
+            {'key':'mass_kg','value':4,'unit':'kg','text':'m1=4kg','object_index':0,'confidence':.99},
+            {'key':'mass_kg','value':4 if same_mass else 2,'unit':'kg','text':'m2','object_index':1,'confidence':.99}])
+    rec = hybrid.fuse(result,analysis).recognition
+    assert len(rec.balls) == 2  # Preserve valid CV geometry even when semantics are ambiguous.
+    assert all(obj.body_id is None for obj in rec.objects)
+    assert all(p.target == 'unresolved' and not p.validated and not p.applied for p in rec.parameters)
+    assert not rec.labels
+
+
+def test_duplicate_proposals_for_one_ball_invalidate_both_associations():
+    result = real_result()
+    analysis = semantic_balls(result)
+    analysis.objects = [analysis.objects[0], analysis.objects[0].model_copy()]
+    analysis.parameters = [hybrid.VisionParameter(key='mass_kg',value=4,unit='kg',text='4kg',
+                                                object_index=i,confidence=.99) for i in range(2)]
+    rec = hybrid.fuse(result,analysis).recognition
+    assert all(obj.body_id is None for obj in rec.objects)
+    assert not any(p.applied or p.validated for p in rec.parameters)
+
+
+def test_distinct_balls_keep_their_own_parameters():
+    result = real_result()
+    analysis = semantic_balls(result)
+    analysis.parameters = [hybrid.VisionParameter(key='mass_kg',value=value,unit='kg',text=f'{value}kg',
+                                                object_index=i,confidence=.99) for i,value in enumerate((4,2))]
+    rec = hybrid.fuse(result,analysis).recognition
+    assert [obj.body_id for obj in rec.objects] == ['ball-1','ball-2']
+    assert [(p.target,p.value,p.validated,p.applied) for p in rec.parameters] == [
+        ('ball-1',4,True,True),('ball-2',2,True,False)]
+
+
+def test_real_block_fixture_still_has_one_unique_ink_supported_quadrilateral():
+    path = FIXTURES / 'real/IMG_9142.jpg'
+    result = recognize(cap.capture(cap.load_image(path.read_bytes())),path.stem)
+    analysis = hybrid.VisionAnalysis(objects=[
+        {'kind':'ball','bbox':[367,278,431,379],'confidence':.95},
+        {'kind':'block','bbox':[617,641,662,727],'confidence':.95}],
+        ramp=None,ground=None,summary='one ball and one block')
+    rec = hybrid.fuse(result,analysis).recognition
+    assert len(rec.blocks) == 1
+    assert rec.objects[1].body_id == 'block-1' and rec.objects[1].geometry_verified
