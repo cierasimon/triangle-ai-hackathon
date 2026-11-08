@@ -1,14 +1,22 @@
-PY      := .venv/bin/python
-UVICORN := .venv/bin/uvicorn
-PYTEST  := .venv/bin/pytest
+VENV    ?= .venv
+VENV_ABS := $(abspath $(VENV))
+PY      := $(VENV_ABS)/bin/python
+UVICORN := $(VENV_ABS)/bin/uvicorn
+PYTEST  := $(VENV_ABS)/bin/pytest
 SET     ?= all
 
-.PHONY: setup dev backend frontend serve test eval data fixtures build tunnel
+.PHONY: setup setup-vision inspect-recognition dev backend frontend serve test eval data fixtures build tunnel
 
 setup:  ## venv (Python 3.12 via uv) + backend deps + frontend deps
-	uv venv --python 3.12 --allow-existing
-	uv pip install -e "backend[dev]"
+	uv venv "$(VENV)" --python 3.12 --allow-existing
+	uv pip install --python "$(PY)" -e "backend[dev]"
 	cd frontend && npm ci
+
+setup-vision:  ## install optional Gemini SDK into an existing project environment
+	uv pip install --python "$(PY)" -e "backend[dev,vision]"
+
+inspect-recognition:  ## local fixture diagnostics; no cloud requests by default
+	$(PY) scripts/inspect_recognition.py
 
 dev:    ## backend on :8000 (reload) + Vite on :5173; open http://localhost:5173
 	@trap 'kill 0' INT TERM EXIT; \
@@ -27,7 +35,7 @@ serve:  ## demo mode: build the UI, serve UI + API from one process on :8000 (fo
 	$(UVICORN) app.main:app --app-dir backend --host 0.0.0.0 --port 8000
 
 test:   ## pytest (no live LLM) + frontend typecheck + vitest
-	cd backend && ../$(PYTEST)
+	cd backend && "$(PYTEST)"
 	npm --prefix frontend run typecheck
 	npm --prefix frontend test
 
