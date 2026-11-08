@@ -28,6 +28,21 @@ export interface Label {
   confidence: number;
 }
 
+export type VisionMode = "opencv" | "hybrid";
+
+export interface DetectedObject {
+  kind: "ball" | "block" | "ramp" | "spring" | "platform" | "wall";
+  bbox: [number, number, number, number];
+  confidence: number;
+  geometry_verified: boolean;
+  body_id: string | null;
+}
+
+export interface DiagramParameter {
+  key: string; value: number | null; unit: string; text: string; target: string;
+  confidence: number; validated: boolean; applied: boolean; note: string;
+}
+
 export interface Recognition {
   image_id: string;
   paper_found: boolean;
@@ -35,6 +50,15 @@ export interface Recognition {
   warped_size: [number, number];
   lines: Line[];
   ball: Ball | null;
+  balls: Ball[];
+  blocks: { vertices: Point[]; center: Point; confidence: number }[];
+  objects: DetectedObject[];
+  parameters: DiagramParameter[];
+  selected_ball_index: number | null;
+  recognition_mode: VisionMode;
+  gemini_status: "disabled" | "success" | "failed" | "unavailable";
+  gemini_model: string | null;
+  gemini_summary: string | null;
   labels: Label[];
   warnings: string[];
 }
