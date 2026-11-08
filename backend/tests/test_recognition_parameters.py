@@ -33,9 +33,10 @@ def test_primary_mass_and_global_labels_reach_existing_builder_without_copying_b
     assert block_mass.validated and not block_mass.applied
     assert block_mass.target == 'block-1' and ball_mass.target == 'ball-1'
     assert ball_mass.applied
-    assert speed.validated and not speed.applied
+    assert speed.validated and speed.applied  # the ball's initial speed now reaches the engine
     scene = build_scene(rec).scene
     assert scene.params.mass_kg == 2 and scene.params.angle_deg == 30
+    assert scene.params.initial_speed_m_s == 3
     assert scene.params.friction == .2 and scene.params.gravity == 9.8
     assert scene.params.sources['mass_kg'] == 'label'
     assert build_scene(rec, ParamsOverride(mass_kg=7)).scene.params.mass_kg == 7

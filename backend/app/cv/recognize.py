@@ -25,6 +25,7 @@ import numpy as np
 from PIL import Image, ImageDraw
 
 from app.contracts import Ball, Line, Recognition
+from app.cv.blocks import detect_blocks
 from app.cv.capture import Capture, darkness
 
 GROUND_MAX_TILT = 15.0  # degrees from horizontal
@@ -128,7 +129,7 @@ def detect_segments(mask: np.ndarray, stroke: float) -> list[Seg]:
 def merge_segments(pieces: list[Seg], mask: np.ndarray, stroke: float) -> list[Seg]:
     short = min(mask.shape[:2])
     perp_tol = max(5.0, 2.0 * stroke)
-    gap_tol = 0.04 * short
+    gap_tol = 0.08 * short  # a block sitting on the ramp hides the ink beside it: bridge its width
     groups: list[list[Seg]] = []
     fits: list[Seg] = []
     for piece in sorted(pieces, key=lambda s: -s.length):
@@ -470,6 +471,12 @@ def recognize(cap: Capture, image_id: str) -> Result:
         labels=[],
         warnings=warnings,
     )
+    if lines:
+        # Drawn squares are found from the ink itself, so blocks never depend on a vision model.
+        rec.blocks = detect_blocks(up_mask, stroke)
+        if rec.blocks:
+            assign_bodies(rec, stroke, [Ball(center=tuple(c.center), radius=c.radius, confidence=round(c.score, 3))
+                                        for c in up_circles if c.shape == "ball"])
     return Result(rec, up_image, up_mask, k, rules,
                   debug={"segments": len(segs), "circles": len(circles), "stroke": stroke})
 
@@ -542,7 +549,7 @@ def pick_others(circles: list[Circle], ball: Ball, low: np.ndarray, high: np.nda
     return out
 
 
-def assign_bodies(rec: Recognition, stroke: float) -> None:
+def assign_bodies(rec: Recognition, stroke: float, extra: list[Ball] | None = None) -> None:
     """Pick the simulated bodies from every verified ball and block: the main one (nearest
     the ramp top) and the others it can hit. Used after the hybrid path adds Gemini-verified
     balls and blocks (rec.balls, rec.blocks); sets rec.ball, rec.other_balls and
@@ -553,7 +560,12 @@ def assign_bodies(rec: Recognition, stroke: float) -> None:
         return
     p1, p2 = np.array(ramp.p1), np.array(ramp.p2)
     low, high = (p1, p2) if p1[1] > p2[1] else (p2, p1)
-    circles = [Circle(np.array(b.center), b.radius, b.confidence, "ball") for b in rec.balls]
+    # every verified ball (plus any other circle the caller found, e.g. a ball resting on the ground)
+    pool = list(rec.balls)
+    for extra_ball in extra or []:
+        if not any(math.dist(extra_ball.center, b.center) < .6 * max(extra_ball.radius, b.radius) for b in pool):
+            pool.append(extra_ball)
+    circles = [Circle(np.array(b.center), b.radius, b.confidence, "ball") for b in pool]
     for block in rec.blocks:
         corners = np.array(block.vertices)
         half = float(np.mean(np.linalg.norm(np.roll(corners, -1, axis=0) - corners, axis=1))) / 2

@@ -155,10 +155,10 @@ def recognize_with_gemini(name: str, monkeypatch) -> Recognition:
     return hybrid.assist(result).recognition
 
 
-def test_blocks_need_the_gemini_path():
-    """Blocks come from the teammate's Gemini detector, not from OpenCV alone."""
+def test_blocks_are_found_without_gemini():
+    """A drawn square is found from the ink alone, so a failed or missing Gemini call loses nothing."""
     rec = recognize(capture(load_image((FIXTURES / "collision" / "block_plain.png").read_bytes())), "x").recognition
-    assert rec.ball is None and not rec.blocks
+    assert len(rec.blocks) == 1 and rec.ball is not None and rec.ball.shape == "block"
 
 
 @pytest.mark.parametrize("name, main, others", [

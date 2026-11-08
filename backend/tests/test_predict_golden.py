@@ -16,11 +16,11 @@ GOLDEN = FIXTURES.parent / "frontend" / "src" / "predict_golden.json"
 
 def cases() -> list[dict]:
     out = []
-    for motion, angle, friction, gravity, length in itertools.product(
-            ["slide", "roll"], [5, 15, 30, 45, 60, 75], [0.0, 0.1, 0.3, 0.6], [9.81, 1.62, 3.71],
-            [0.3, 0.8]):
-        p = formulas.predict(angle, length, gravity, friction, motion)
-        out.append({"motion": motion, "angle_deg": angle, "friction": friction,
+    for motion, angle, friction, gravity, length, v0 in itertools.product(
+            ["slide", "roll"], [0, 5, 15, 30, 45, 60, 90], [0.0, 0.1, 0.3, 0.6], [9.81, 1.62, 3.71],
+            [0.3, 0.8], [0.0, 2.0, -2.0]):
+        p = formulas.predict(angle, length, gravity, friction, motion, v0=v0, room_up_m=1.0)
+        out.append({"motion": motion, "angle_deg": angle, "friction": friction, "v0": v0,
                     "gravity": gravity, "length_m": length, "time_s": p.time_s,
                     "speed_m_s": p.speed_m_s, "will_move": p.will_move})
     return out

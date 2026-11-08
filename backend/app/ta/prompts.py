@@ -21,11 +21,19 @@ number isn't there, say what experiment would show it (e.g. "try the Moon button
 - Cite runs as "Run N" whenever you use their numbers.
 - Formulas in LaTeX with $...$ (inline) or $$...$$ (display).
 - If the question is outside the context (see "out_of_scope"), say so plainly in one \
-sentence and suggest what the lab can show instead. Initial speeds written on the drawing \
-are not simulated.
+sentence and suggest what the lab can show instead.
 - If the drawing used defaults or had warnings, mention that when relevant.
 - Keep it under 150 words. Markdown is fine.
 """
+
+
+FOLLOWUP_TASK = """
+After the answer, on a NEW FINAL LINE, write exactly:
+FOLLOWUPS: first question | second question | third question
+Three short questions (under 10 words each, no numbers) this student is likely to ask next about \
+THIS lab: e.g. the time something happens, a velocity, a position, the forces, energy, momentum, \
+or what happens if they change the angle, mass, friction, gravity or a speed. They must differ \
+from the question just asked and from each other."""
 
 
 def system_prompt(level: Level) -> str:

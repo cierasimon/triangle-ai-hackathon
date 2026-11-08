@@ -16,6 +16,8 @@ interface Props {
   originalAngle?: number | null; // faint dashed ramp
   mass?: number; // preview mass for the weight arrow
   otherMass?: number; // preview mass of the other balls
+  /** Initial speed of each object, A first (+ down the ramp / right along the ground). Shown as arrows at the start. */
+  speeds?: number[];
   /** Enable dragging the ball along the ramp. Called with where it starts (0 = bottom, 1 = top). */
   onBallDrag?: (fraction: number) => void;
   onBallDragEnd?: (fraction: number) => void;
@@ -40,7 +42,7 @@ const FG = "#ececec";
 const MUTED = "#8c8c8c";
 const FAINT = "#4a4a4a";
 const FONT = "13px system-ui, sans-serif";
-const SUB = ["₁", "₂", "₃", "₄", "₅", "₆"];
+const letterOf = (i: number) => String.fromCharCode(65 + i);
 
 function arrow(ctx: CanvasRenderingContext2D, x0: number, y0: number, x1: number, y1: number) {
   const len = Math.hypot(x1 - x0, y1 - y0);
@@ -74,7 +76,7 @@ const sizeRatio = (mass: number, simulated: number) => Math.cbrt(mass / simulate
 
 // Draws one run (meters, y up) with a fixed view, so dragging the ramp doesn't rescale it.
 export function SceneCanvas({
-  run, t, onDrag, onDragEnd, dragAngle, dragLength, originalAngle, mass, otherMass,
+  run, t, onDrag, onDragEnd, dragAngle, dragLength, originalAngle, mass, otherMass, speeds,
   onBallDrag, onBallDragEnd, dragStart, onOtherDrag, onOtherDragEnd, dragOther,
 }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -139,10 +141,19 @@ export function SceneCanvas({
       mass: m2,
     });
   });
+  // at the start (or while something is being changed) show each object's initial velocity
+  const atStart = previewing || t <= 0;
+  const down: Point = [-ramp.side * Math.cos(a), -Math.sin(a)];
+  balls.forEach((b, i) => {
+    const v = speeds?.[i] ?? (i === 0 ? params.initial_speed_m_s : scene.others[i - 1].speed_m_s);
+    const surface = i === 0 ? "ramp" : i === 1 && dragOther ? dragOther.surface : scene.others[i - 1].surface;
+    if (atStart && !moving) b.vel = surface === "ramp" ? [down[0] * v, down[1] * v] : [v, 0];
+  });
   const c = run.collision;
   const vMax = Math.max(
     run.verification.simulated_speed_m_s ?? run.verification.predicted_speed_m_s ?? 0,
     c?.v1_before ?? 0, c?.v2_after ?? 0, c?.v1_after ?? 0,
+    ...(speeds ?? []).map(Math.abs),
   );
 
   useEffect(() => {
@@ -221,7 +232,7 @@ export function SceneCanvas({
     ctx.fillText(`L = ${ramp.fullLength.toFixed(2)} m`, px(mid[0]) - ramp.side * 14, py(mid[1]) - 10);
 
     // balls, each with its weight and velocity
-    const label = (name: string, i: number) => (balls.length > 1 ? `${name}${SUB[i] ?? i + 1}` : name);
+    const label = (name: string, i: number) => (balls.length > 1 ? `${name}(${letterOf(i)})` : name);
     balls.forEach((b, i) => {
       // never smaller than MIN_BALL_PX on screen; drawn bigger than simulated (tiny on a long
       // ramp, or a mass slider moving), it is lifted so it still sits on the surface
@@ -244,6 +255,15 @@ export function SceneCanvas({
         ctx.fill();
       }
       ctx.restore();
+
+      // the object's letter, A for the first, B for the second, ...
+      ctx.fillStyle = held || i === 0 ? "#111" : "#f2f2f2";
+      ctx.font = `700 ${Math.max(11, Math.min(r * 1.1, 22))}px system-ui, sans-serif`;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(letterOf(i), cx, cy + 1);
+      ctx.font = FONT;
+      ctx.fillStyle = FG;
 
       // weight: straight down, longer for a heavier ball
       const wLen = Math.max(0, Math.min(unit * (0.08 + 0.017 * b.mass), size.h - cy - 24));

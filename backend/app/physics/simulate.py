@@ -21,6 +21,8 @@ TIME_LIMIT_S = 10.0
 ROLL_FRICTION = 5.0  # high enough to roll without slipping up to 75°
 STUCK_AFTER_S = 0.5
 STUCK_DIST_M = 1e-6
+AT_REST_M_S = 1e-3
+STILL_S = 0.1  # at rest this long = stopped (not just the top of a throw)
 
 
 @dataclass
@@ -33,6 +35,14 @@ class SimResult:
 def _unit(a: tuple[float, float], b: tuple[float, float]) -> tuple[float, float]:
     d = math.dist(a, b)
     return (b[0] - a[0]) / d, (b[1] - a[1]) / d
+
+
+def launch(body: pymunk.Body, down: tuple[float, float], v0: float, radius: float, rolls: bool) -> None:
+    """Give the body its initial speed along the ramp (+ down, - up); a rolling ball starts
+    rolling without slipping."""
+    body.velocity = (down[0] * v0, down[1] * v0)
+    if rolls and v0:
+        body.angular_velocity = -v0 * (1.0 if down[0] >= 0 else -1.0) / radius
 
 
 def start_position(scene: Scene) -> tuple[tuple[float, float], tuple[float, float],
@@ -70,10 +80,12 @@ def simulate(scene: Scene) -> SimResult:
     ball = pymunk.Circle(body, r)
     ball.friction = ROLL_FRICTION if p.motion == "roll" else p.friction
     space.add(ramp, body, ball)
+    launch(body, down, p.initial_speed_m_s, r, p.motion == "roll")
 
     frames = [Frame(t=0.0, x=center[0], y=center[1], angle=0.0)]
     length = scene.ramp_length_m
-    t, prev_s, step = 0.0, 0.0, 0
+    up_room = math.dist(scene.ramp_top_m, bottom) - length  # how far it can rise before the top
+    t, prev_s, step, still = 0.0, 0.0, 0, 0
     while t < TIME_LIMIT_S:
         space.step(DT)
         step += 1
@@ -90,8 +102,11 @@ def simulate(scene: Scene) -> SimResult:
             return SimResult(frames, t_cross, body.velocity.length)
         if step % RECORD_EVERY == 0:
             frames.append(Frame(t=t, x=pos.x, y=pos.y, angle=body.angle))
-        if t >= STUCK_AFTER_S and s < STUCK_DIST_M:
-            break  # held by friction: it will not move
+        if s < -up_room:
+            break  # ran off the top of the ramp
+        still = still + 1 if body.velocity.length < AT_REST_M_S else 0
+        if t >= STUCK_AFTER_S and still * DT >= STILL_S:
+            break  # at rest (held by friction, or stopped on the way): it will not get there
         prev_s = s
     return SimResult(frames, None, None)
 
@@ -101,7 +116,6 @@ def simulate(scene: Scene) -> SimResult:
 BALL_ELASTICITY = 0.9  # per ball; pymunk multiplies them, so ball–ball restitution e = 0.81
 GROUND_HALF_WIDTH_M = 50.0
 AFTER_HIT_S = 2.0  # keep going this long after the first hit
-AT_REST_M_S = 1e-3
 CONTACT_SETTLE_STEPS = 10  # read the "after" speeds once the contact has been resolved
 
 
@@ -189,6 +203,15 @@ def simulate_collisions(scene: Scene) -> MultiResult:
     main = _body(space, scene, p.mass_kg, scene.ball_radius_m, scene.ball_shape, center, tilt, True)
     others = [_body(space, scene, o.mass_kg, o.radius_m, o.shape, o.center_m,
                     tilt if o.surface == "ramp" else 0.0, o.surface == "ramp") for o in scene.others]
+    launch(main, down, p.initial_speed_m_s, scene.ball_radius_m, p.motion == "roll" and scene.ball_shape == "ball")
+    for body, o in zip(others, scene.others):
+        rolls = p.motion == "roll" and o.shape == "ball"
+        if o.surface == "ramp":
+            launch(body, down, o.speed_m_s, o.radius_m, rolls)
+        elif o.speed_m_s:  # on the ground: + is to the right
+            body.velocity = (o.speed_m_s, 0.0)
+            if rolls:
+                body.angular_velocity = -o.speed_m_s / o.radius_m
     bodies = [main, *others]
     radii = [scene.ball_radius_m, *(o.radius_m for o in scene.others)]
     kinds = [scene.ball_shape, *(o.shape for o in scene.others)]
@@ -202,6 +225,7 @@ def simulate_collisions(scene: Scene) -> MultiResult:
     collision: Collision | None = None
     pending: tuple[float, int, float, float] | None = None  # (t, other, v1, v2) before the hit
     settle = 0
+    still = 0
     t, step = 0.0, 0
     while t < TIME_LIMIT_S:
         for i, b in enumerate(bodies):
@@ -260,7 +284,8 @@ def simulate_collisions(scene: Scene) -> MultiResult:
             break
         if all(halted):
             break
-        if t >= STUCK_AFTER_S and all(b.velocity.length < AT_REST_M_S for b in bodies):
+        still = still + 1 if all(b.velocity.length < AT_REST_M_S for b in bodies) else 0
+        if t >= STUCK_AFTER_S and still * DT >= STILL_S:
             break  # nothing moves (held by friction, halted, or everything has stopped)
     if frames[-1].t < t:
         frames.append(frame(t))

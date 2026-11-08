@@ -12,8 +12,9 @@ from dataclasses import dataclass, field
 from app.contracts import OtherBall, Params, ParamsOverride, Point, Recognition, Scene
 from app.physics.simulate import ground_run
 
-ANGLE_MIN, ANGLE_MAX = 5.0, 75.0
-DEFAULTS = {"mass_kg": 1.0, "gravity": 9.81, "friction": 0.0, "motion": "slide"}
+ANGLE_MIN, ANGLE_MAX = 0.0, 90.0
+DEFAULTS = {"mass_kg": 1.0, "gravity": 9.81, "friction": 0.0, "initial_speed_m_s": 0.0, "motion": "slide"}
+MAX_SPEED_M_S = 10.0
 DEFAULT_BALL_RADIUS_M = 0.03
 DEFAULT_START_FRACTION = 0.1  # no ball drawn: start 10% down from the ramp top
 MIN_TRAVEL_M = 0.05
@@ -29,7 +30,7 @@ def size_factor(mass_kg: float) -> float:
     return (max(mass_kg, 1e-3) / REF_MASS_KG) ** (1 / 3)
 
 
-SCENE_ONLY = {"start_fraction", "ramp_full_m", "other_mass_kg", "other_surface", "other_at"}  # not Params
+SCENE_ONLY = {"start_fraction", "ramp_full_m", "other_mass_kg", "other_surface", "other_at", "other_speeds_m_s"}  # not Params
 
 
 class SceneError(ValueError):
@@ -134,8 +135,9 @@ def build_scene(rec: Recognition, override: ParamsOverride | None = None) -> Bui
     other_size = size_factor(other_mass)
     placed = [
         OtherBall(surface=surface, at=at, shape=kind, radius_m=r * other_size, mass_kg=other_mass,
+                  speed_m_s=_other_speed(i, rec, override),
                   center_m=other_center(surface, at, r * other_size, bottom, top))
-        for surface, at, r, kind in others
+        for i, (surface, at, r, kind) in enumerate(others)
     ]
 
     # the flat ground runs past the ramp foot (and past any other ball) to a stop, scaled
@@ -150,6 +152,7 @@ def build_scene(rec: Recognition, override: ParamsOverride | None = None) -> Bui
         mass_kg=values["mass_kg"],
         gravity=values["gravity"],
         friction=values["friction"],
+        initial_speed_m_s=min(max(values["initial_speed_m_s"], -MAX_SPEED_M_S), MAX_SPEED_M_S),
         motion=values["motion"],
         defaults_used=defaults_used,
         sources=sources,
@@ -167,6 +170,16 @@ def build_scene(rec: Recognition, override: ParamsOverride | None = None) -> Bui
         ground_end_x_m=ground_end,
     )
     return BuildResult(scene, warnings)
+
+
+def _other_speed(i: int, rec: Recognition, override: ParamsOverride | None) -> float:
+    """Initial speed of other body i: the learner's value, else the one read from the drawing."""
+    given = override.other_speeds_m_s if override and override.other_speeds_m_s else []
+    if i < len(given) and given[i] is not None:
+        v = given[i]
+    else:
+        v = rec.other_speeds[i] if i < len(rec.other_speeds) else 0.0
+    return min(max(v, -MAX_SPEED_M_S), MAX_SPEED_M_S)
 
 
 def _others(rec: Recognition, to_m, top: Point, down: Point, full_len: float):

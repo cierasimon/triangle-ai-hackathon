@@ -11,8 +11,7 @@ from app.contracts import Level, Run
 from app.physics.whycard import why_card
 
 INTENTS = [
-    ("out_of_scope", r"initial speed|v0|v₀|start(ing)? speed|push|throw|spring|block|collision|"
-                     r"pendulum|air( resistance)?|bounce"),
+    ("out_of_scope", r"spring|pendulum|air( resistance)?|bounce"),
     ("recognition", r"\bread\b|recogni|detect|\bsee\b|\bsaw\b|photo|drawing|drew|defaults?|"
                     r"wrong angle|misread"),
     ("mass", r"mass|heav|light(er)?\b|weigh|\bkg\b"),
@@ -89,11 +88,10 @@ TRY = {
     "roll": "Try the **roll** button and compare it with sliding.",
 }
 
-OUT_OF_SCOPE = ("That's outside what this lab simulates: the ball always starts from rest on "
-                "a straight ramp, so initial speeds written on the drawing (like an arrow with "
-                "a speed), blocks, springs, collisions and air resistance are not modelled. "
-                "What it *can* show: how the angle, gravity, friction, mass and rolling change "
-                "the time to the bottom.")
+OUT_OF_SCOPE = ("That's outside what this lab simulates: the ball moves on a straight ramp, "
+                "so springs, pendulums, bounces and air resistance are not modelled. "
+                "What it *can* show: how the angle, gravity, friction, mass, rolling and the "
+                "initial speed change the time to the bottom.")
 
 
 def detect_intent(question: str) -> str:
@@ -159,7 +157,8 @@ def explain_recognition(session: store.Session) -> str:
         if assumed:
             p = first.scene.params
             values = {"mass_kg": f"mass {p.mass_kg:g} kg", "gravity": f"g = {p.gravity:g} m/s²",
-                      "friction": f"μ = {p.friction:g}", "motion": "sliding"}
+                      "friction": f"μ = {p.friction:g}", "motion": "sliding",
+                      "initial_speed_m_s": "it starts from rest"}
             lines.append("**Assumed (not written on the drawing):** "
                          + ", ".join(values[k] for k in assumed) + ".")
     if rec.warnings:
